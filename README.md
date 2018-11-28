@@ -1,5 +1,5 @@
 
-# Open Service Brokers
+# Open Service Broker Framework (by evoila)
 
 A Service Broker provides the possibility to extend a platform [Cloud Foundry](https://www.cloudfoundry.org/) and [Kubernetes](https://www.https://kubernetes.io//) with services (for example a database) that can be consumed by applications deployed to this platform.
 
