@@ -1,0 +1,482 @@
+{
+	"info": {
+		"_postman_id": "4edb04bb-2116-8b5c-6a43-96cbd82a20eb",
+		"name": "OSB",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Unbind Instance",
+			"request": {
+				"auth": {
+					"type": "basic",
+					"basic": [
+						{
+							"key": "password",
+							"value": "cloudfoundry",
+							"type": "string"
+						},
+						{
+							"key": "username",
+							"value": "admin",
+							"type": "string"
+						}
+					]
+				},
+				"method": "DELETE",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					},
+					{
+						"key": "X-Broker-API-Version",
+						"value": "2.13"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "localhost:8080/v2/service_instances/{{serviceInstanceId}}/service_bindings/{{bindingId}}?service_id={{serviceId}}&plan_id={{planId}}",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"v2",
+						"service_instances",
+						"{{serviceInstanceId}}",
+						"service_bindings",
+						"{{bindingId}}"
+					],
+					"query": [
+						{
+							"key": "service_id",
+							"value": "{{serviceId}}"
+						},
+						{
+							"key": "plan_id",
+							"value": "{{planId}}"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Bind Instance",
+			"request": {
+				"auth": {
+					"type": "basic",
+					"basic": [
+						{
+							"key": "password",
+							"value": "cloudfoundry",
+							"type": "string"
+						},
+						{
+							"key": "username",
+							"value": "admin",
+							"type": "string"
+						}
+					]
+				},
+				"method": "PUT",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					},
+					{
+						"key": "X-Broker-API-Version",
+						"value": "2.13"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"service_id\" : \"{{serviceId}}\",\n\t\"plan_id\" : \"{{planId}}\",\n\t\"app_guid\" : \"123456\"\n}"
+				},
+				"url": {
+					"raw": "localhost:8080/v2/service_instances/{{serviceInstanceId}}/service_bindings/{{bindingId}}",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"v2",
+						"service_instances",
+						"{{serviceInstanceId}}",
+						"service_bindings",
+						"{{bindingId}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get Catalog",
+			"request": {
+				"auth": {
+					"type": "basic",
+					"basic": [
+						{
+							"key": "password",
+							"value": "cloudfoundry",
+							"type": "string"
+						},
+						{
+							"key": "username",
+							"value": "admin",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [
+					{
+						"key": "X-Broker-API-Version",
+						"value": "2.13"
+					}
+				],
+				"body": {},
+				"url": {
+					"raw": "localhost:8080/v2/catalog",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"v2",
+						"catalog"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Update Instance",
+			"request": {
+				"auth": {
+					"type": "basic",
+					"basic": [
+						{
+							"key": "password",
+							"value": "cloudfoundry",
+							"type": "string"
+						},
+						{
+							"key": "username",
+							"value": "admin",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					},
+					{
+						"key": "X-Broker-API-Version",
+						"value": "2.13"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"domains\": \"test.depp.de\",\n\t\"email\": \"test@depp.de\",\n\t\"acceptTerms\": true\n}"
+				},
+				"url": {
+					"raw": "localhost:8080/v2/manage/service_instances/{{serviceInstanceId}}/submit",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"v2",
+						"manage",
+						"service_instances",
+						"{{serviceInstanceId}}",
+						"submit"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Last Operation",
+			"request": {
+				"auth": {
+					"type": "basic",
+					"basic": [
+						{
+							"key": "password",
+							"value": "cloudfoundry",
+							"type": "string"
+						},
+						{
+							"key": "username",
+							"value": "admin",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					},
+					{
+						"key": "X-Broker-API-Version",
+						"value": "2.13"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"service_id\" : \"redis-dev\",\n\t\"plan_id\" : \"redis_s_dev\",\n\t\"organization_guid\" : \"123456\",\n\t\"space_guid\" : \"12456\"\n}"
+				},
+				"url": {
+					"raw": "localhost:8080/v2/service_instances/{{serviceInstanceId}}/last_operation",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"v2",
+						"service_instances",
+						"{{serviceInstanceId}}",
+						"last_operation"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Delete Instance",
+			"request": {
+				"auth": {
+					"type": "basic",
+					"basic": [
+						{
+							"key": "password",
+							"value": "cloudfoundry",
+							"type": "string"
+						},
+						{
+							"key": "username",
+							"value": "admin",
+							"type": "string"
+						}
+					]
+				},
+				"method": "DELETE",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					},
+					{
+						"key": "X-Broker-API-Version",
+						"value": "2.13"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"service_id\" : \"redis-dev\",\n\t\"plan_id\" : \"redis_s_dev\",\n\t\"organization_guid\" : \"123456\",\n\t\"space_guid\" : \"12456\"\n}"
+				},
+				"url": {
+					"raw": "localhost:8080/v2/service_instances/{{serviceInstanceId}}?accepts_incomplete=true&service_id={{serviceId}}&plan_id={{planId}}",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"v2",
+						"service_instances",
+						"{{serviceInstanceId}}"
+					],
+					"query": [
+						{
+							"key": "accepts_incomplete",
+							"value": "true"
+						},
+						{
+							"key": "service_id",
+							"value": "{{serviceId}}"
+						},
+						{
+							"key": "plan_id",
+							"value": "{{planId}}"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Update DNS LBaaS",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"domains\" : \"test123.fuck.com\",\n\t\"email\" : \"wooho@evoila.de\",\n\t\"acceptTerms\" : true\n}"
+				},
+				"url": {
+					"raw": "localhost:8080/v2/manage/service_instances/876543210/dns",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"v2",
+						"manage",
+						"service_instances",
+						"876543210",
+						"dns"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get FIP LBaaS",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {},
+				"url": {
+					"raw": "localhost:8080/v2/manage/service_instances/876543210/fip",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"v2",
+						"manage",
+						"service_instances",
+						"876543210",
+						"fip"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Create Instance",
+			"request": {
+				"auth": {
+					"type": "basic",
+					"basic": [
+						{
+							"key": "password",
+							"value": "cloudfoundry",
+							"type": "string"
+						},
+						{
+							"key": "username",
+							"value": "admin",
+							"type": "string"
+						}
+					]
+				},
+				"method": "PUT",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					},
+					{
+						"key": "X-Broker-API-Version",
+						"value": "2.13"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"service_id\" : \"{{serviceId}}\",\n\t\"plan_id\" : \"{{planId}}\",\n\t\"organization_guid\" : \"123456\",\n\t\"space_guid\" : \"12456\"\n}"
+				},
+				"url": {
+					"raw": "localhost:8080/v2/service_instances/{{serviceInstanceId}}?accepts_incomplete=true",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"v2",
+						"service_instances",
+						"{{serviceInstanceId}}"
+					],
+					"query": [
+						{
+							"key": "accepts_incomplete",
+							"value": "true"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Patch Instance",
+			"request": {
+				"auth": {
+					"type": "basic",
+					"basic": [
+						{
+							"key": "password",
+							"value": "cloudfoundry",
+							"type": "string"
+						},
+						{
+							"key": "username",
+							"value": "admin",
+							"type": "string"
+						}
+					]
+				},
+				"method": "PATCH",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					},
+					{
+						"key": "X-Broker-API-Version",
+						"value": "2.13"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"service_id\" : \"{{serviceId}}\",\n\t\"plan_id\" : \"{{planId}}\",\n\t\"organization_guid\" : \"123456\",\n\t\"space_guid\" : \"12456\"\n}"
+				},
+				"url": {
+					"raw": "localhost:8080/v2/service_instances/{{serviceInstanceId}}?accepts_incomplete=true",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"v2",
+						"service_instances",
+						"{{serviceInstanceId}}"
+					],
+					"query": [
+						{
+							"key": "accepts_incomplete",
+							"value": "true"
+						}
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
