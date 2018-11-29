@@ -95,7 +95,7 @@ Due to a significant amount of problems with OpenStack Heat, not maintained anym
 ## Dashboard
 The dashboard is a Single Page Application (SPA) with different modules for each Service Broker. When you want to create a new Dashboard module for your specific Service Broker the first step is (after you have made yourself comfortable with Angular 5+ and reviewed all the shared components the Dashboard brings along) to create a new entry in: `.angular-cli.json`, which should looks as follows:
 
-```json
+```yaml
 {
     "name": "new-module", #(any fancy DB you want to Service Brokerize)
     "root": "src",
