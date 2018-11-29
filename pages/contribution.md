@@ -42,7 +42,8 @@ If you are asked to make some changes to your request, add more commits and push
 
 ---
 
-<div style="overflow: hidden;">
-    <p style="float: left;"><a href="ide-runtime.md"><- Previous</a></p>
-    <p style="float: right;"><a href="license.md">Next -></a></p>
-</div>
+<p align="center">
+    <span ><a href="ide-runtime.md"><- Previous</a></span>
+	    <span>&nbsp; | &nbsp;</span> 
+    <span><a href="license.md">Next -></a></span>
+</p>

@@ -15,7 +15,8 @@
 
 ---
 
-<div style="overflow: hidden;">
-    <p style="float: left;"><a href="development.md"><- Previous</a></p>
-    <p style="float: right;"><a href="contribution.md">Next -></a></p>
-</div>
+<p align="center">
+    <span ><a href="development.md"><- Previous</a></span>
+	    <span>&nbsp; | &nbsp;</span> 
+    <span><a href="contribution.md">Next -></a></span>
+</p>

@@ -87,6 +87,8 @@ Unless required by applicable law or agreed to in writing, software distributed 
 
 ---
 
-<div style="overflow: hidden;">
-    <p style="float: left;"><a href="contribution.md"><- Previous</a></p>
-</div>
+<p align="center">
+    <span ><a href="contribution.md"><- Previous</a></span>
+	    <span>&nbsp; | &nbsp;</span> 
+    <span></a></span>
+</p>

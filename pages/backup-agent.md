@@ -85,7 +85,8 @@ public class BackupCustomServiceImpl implements BackupCustomService {
 
 ---
 
-<div style="overflow: hidden;">
-    <p style="float: left;"><a href="service-keys.md"><- Previous</a></p>
-    <p style="float: right;"><a href="development.md">Next -></a></p>
-</div>
+<p align="center">
+    <span ><a href="service-keys.md"><- Previous</a></span>
+	    <span>&nbsp; | &nbsp;</span> 
+    <span><a href="development.md">Next -></a></span>
+</p>

@@ -181,7 +181,8 @@ After having defined those files, you can follow the `README.md` in the [Dashboa
 
 ---
 
-<div style="overflow: hidden;">
-    <p style="float: left;"><a href="../README.md"><- Previous</a></p>
-    <p style="float: right;"><a href="configure-service-broker.md">Next -></a></p>
-</div>
+<p align="center">
+    <span ><a href="../README.md"><- Previous</a></span>
+	    <span>&nbsp; | &nbsp;</span> 
+    <span><a href="configure-service-broker.md">Next -></a></span>
+</p>

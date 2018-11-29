@@ -56,6 +56,8 @@ A Site is a dedicated Cloud Foundry/Kubernetes deployment. The Open Service Brok
 
 ---
 
-<div style="overflow: hidden;">
-    <p style="float: right;"><a href="pages/components.md">Next -></a></p>
-</div>
+<p align="center">
+    <span> </span>
+	    <span>&nbsp; | &nbsp;</span> 
+    <span><a href="pages/components.md">Next -></a></span>
+</p>

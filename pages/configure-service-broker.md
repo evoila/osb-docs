@@ -423,7 +423,8 @@ The Site Configuration is an additional way of configuring the Service Broker wi
 
 ---
 
-<div style="overflow: hidden;">
-    <p style="float: left;"><a href="components.md"><- Previous</a></p>
-    <p style="float: right;"><a href="service-keys.md">Next -></a></p>
-</div>
+<p align="center">
+    <span ><a href="components.md"><- Previous</a></span>
+	    <span>&nbsp; | &nbsp;</span> 
+    <span><a href="service-keys.md">Next -></a></span>
+</p>

@@ -100,7 +100,8 @@ vm_types:
 
 --- 
 
-<div style="overflow: hidden;">
-    <p style="float: left;"><a href="backup-agent.md"><- Previous</a></p>
-    <p style="float: right;"><a href="ide-runtime.md">Next -></a></p>
-</div>
+<p align="center">
+    <span ><a href="backup-agent.md"><- Previous</a></span>
+	    <span>&nbsp; | &nbsp;</span> 
+    <span><a href="ide-runtime.md">Next -></a></span>
+</p>
