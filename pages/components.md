@@ -208,7 +208,7 @@ Before using the feature make sure to save all necessary information in the **ap
 | -------------------------------------- | ----------------- |
 | spring.credhub.url                     | URL of the environment where credhub is installed |
 | spring.credhub.bosh-director           | Name of the bosh director |
-| spring.credhub.keystore-password       | User generated password to secure the keystore |
+| spring.credhub.keystore-password       | **(OPTIONAL)** User generated password to secure the keystore |
 | spring.credhub.oauth2.client-id        | Username for fetching an oauth token |
 | spring.credhub.oauth2.client-secret    | Password for fetching an oauth token |
 | spring.credhub.oauth2.access-token-uri | Uri to fetch an oauth token from, which is used to authenticate for generating, storing & deleting credentials |
