@@ -309,7 +309,7 @@ public String getPrivateKey(String instanceId, String valueName) { ... }
 
 ```
 
-Parameters are the same as in 2.1
+Parameters are the same as in [Generating](#generating)
 
 ---
 
