@@ -143,6 +143,44 @@ existing:
 ```
 This section is a bit longer. It contains the definition for two existing endpoints. Important here is to define unique `server_name` and all the machines, which are needed to be contacted during service/binding creation, as well as the username/password and authentication database. 
 
+**Java Version**
+
+The configuration of the service broker and the deployment manifest depends on the Java version you are working with. For version 9 or higher you have to add the following compiler arguments to **maven-compiler-plugin** in your **pom.xml** since the sun.* packages are no longer a part of the Java interface.
+
+```xml
+<plugin>
+	<groupId>org.apache.maven.plugins</groupId>
+	<artifactId>maven-compiler-plugin</artifactId>
+	<configuration>
+		<source>${java.version}</source>
+		<target>${java.version}</target>
+		<compilerArgs>
+			<arg>--add-exports</arg>
+			<arg>java.base/sun.security.util=ALL-UNNAMED</arg>
+		</compilerArgs>
+	</configuration>
+</plugin>
+```
+
+Also make sure to change to Java version in the **pom.xml**
+
+```xml
+<java.version>11</java.version>
+```
+
+For deploying the service-broker on Cloud Foundry you also have to change the deployment **manifest.yml**. First you have to specify the buildpack version. For Java 11 this would be
+
+```yaml
+buildpack: https://github.com/cloudfoundry/java-buildpack.git#v4.17.2
+```
+
+Last but not least add the following line to the environment section in the mannifest and you are good to go.
+
+```yaml
+env:
+  JBP_CONFIG_OPEN_JDK_JRE: '{ jre: { version: 11.+ } }'
+```
+
 ## Catalog Configuration
 The Catalog definition is an important part of the Service Broker deployment infrastructure. To demonstrate the implemented capabilites, we use the example of the `osb-lbaas` Catalog definition to show it capabilities: 
 ```yaml
