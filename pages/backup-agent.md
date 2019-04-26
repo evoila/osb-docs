@@ -21,13 +21,17 @@ The Backup Manager is a component provided with the evoila OSB Framework in the 
 To enable the Backup Connector configuration wise, the Service Broker needs to be deployed with the following settings:
 
 ```yaml
-plans
-- name: xs
-  ...
-  metadata:
-    backup:
-        enabled: true
-        instance_group: postgres
+backup:
+  enabled: true
+catalog:
+  services:
+    plans:
+      - name: xs
+        ...
+        metadata:
+          backup:
+            enabled: true
+            instance_group: postgres
 ```
 * **enabled**: if set to true it is enabled for the specific plan.
 * **instance_group**: the instance group the osb-backup-manager is connection to, to execute the backups.
