@@ -38,6 +38,29 @@ catalog:
 
 *Note: please be aware, that the communication to schedule the backup jobs is done via RabbitMQ. That means, an existing RabbitMQ configuration must exist. Refer to Basic Service Broker configuration for that.*
 
+## Configuration in the BoshPlatformService
+To set the backup functionality for the instance group, configured in the metadata of a plan, use the method  
+```java
+protected ServerAddress toServerAddress(Vm vm, int port, Plan plan)
+```
+Example:
+```java
+@Service
+@ConditionalOnBean(BoshProperties.class)
+public class MyBoshPlatformService extends BoshPlatformService {
+
+    @Override
+    protected void updateHosts(ServiceInstance serviceInstance, Plan plan, Deployment deployment) {
+        List<Vm> vms = super.getVms(serviceInstance);
+        if (serviceInstance.getHosts() == null)
+            serviceInstance.setHosts(new ArrayList<>());
+        serviceInstance.getHosts().clear();
+
+        vms.forEach(vm -> serviceInstance.getHosts().add(super.toServerAddress(vm, 1234, plan)));
+    }
+}
+```
+
 ## Implementation of the Backup Connector
 The Backup Connector is a component 
 ```java
