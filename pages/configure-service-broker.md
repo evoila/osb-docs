@@ -168,6 +168,16 @@ Also make sure to change to Java version in the **pom.xml**
 <java.version>12</java.version>
 ```
 
+Change the spring-boot-starter-parent version in the **pom.xml** as well
+
+```xml
+<parent>
+	<groupId>org.springframework.boot</groupId>
+	<artifactId>spring-boot-starter-parent</artifactId>
+	<version>2.1.5.RELEASE</version>
+</parent>
+```
+
 For deploying the service-broker on Cloud Foundry you also have to change the deployment **manifest.yml**. First you have to specify the buildpack version. For Java 12 this would be
 
 ```yaml
