@@ -165,20 +165,20 @@ The configuration of the service broker and the deployment manifest depends on t
 Also make sure to change to Java version in the **pom.xml**
 
 ```xml
-<java.version>11</java.version>
+<java.version>12</java.version>
 ```
 
-For deploying the service-broker on Cloud Foundry you also have to change the deployment **manifest.yml**. First you have to specify the buildpack version. For Java 11 this would be
+For deploying the service-broker on Cloud Foundry you also have to change the deployment **manifest.yml**. First you have to specify the buildpack version. For Java 12 this would be
 
 ```yaml
-buildpack: https://github.com/cloudfoundry/java-buildpack.git#v4.17.2
+buildpack: https://github.com/cloudfoundry/java-buildpack.git#v4.19.1
 ```
 
 Last but not least add the following line to the environment section in the mannifest and you are good to go.
 
 ```yaml
 env:
-  JBP_CONFIG_OPEN_JDK_JRE: '{ jre: { version: 11.+ } }'
+  JBP_CONFIG_OPEN_JDK_JRE: '{ jre: { version: 12.+ } }'
 ```
 
 ## Catalog Configuration
