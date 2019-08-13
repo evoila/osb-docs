@@ -174,7 +174,7 @@ Change the spring-boot-starter-parent version in the **pom.xml** as well
 <parent>
 	<groupId>org.springframework.boot</groupId>
 	<artifactId>spring-boot-starter-parent</artifactId>
-	<version>2.1.5.RELEASE</version>
+	<version>2.1.7.RELEASE</version>
 </parent>
 ```
 
