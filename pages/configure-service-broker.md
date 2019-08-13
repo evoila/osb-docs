@@ -23,7 +23,7 @@
 # Basic Configuration
 Within the following sections the documentation covers the maximum number of possibilities in regard of Service Broker configuration for the evoila OSB Framework. Each configuration section, which is not mandatory, is marked with (Optional).
 
-In the `spring` section we define the endpoint properties, for communication between Config Server, Service Key Manager, Backup Manager and Service Broker (RabbitMQ) and the storage backend which is based on MongoDB. In regard to the storage backend it is important to note, that MongoDB might be replaced with any database of choice. The only thing that needs to adapted are the interfaces in the `osb-persistence` module.
+In the `spring` section we define the endpoint properties, for communication between Config Server, Backup Manager and Service Broker (RabbitMQ) and the storage backend which is based on MongoDB. In regard to the storage backend it is important to note, that MongoDB might be replaced with any database of choice. The only thing that needs to adapted are the interfaces in the `osb-persistence` module.
 
 *Note: an important note here is, that we correlate multi site deployments with spring profiles. Means, the profiles section contains the name of the site, where the Service Broker is deployed.*
 
@@ -47,7 +47,7 @@ spring:
     cache: true
     mode: LEGACYHTML5
 ```
-The basic configuration for communication with the backend database, RabbitMQ (Config Updates, Service Key Creation) and Thymeleaf for Service Broker dashboard delivery. 
+The basic configuration for communication with the backend database, RabbitMQ (Config Updates) and Thymeleaf for Service Broker dashboard delivery. 
 
 ```yaml
 login:
@@ -446,15 +446,6 @@ endpoints:
     url: https://osb-autoscaler-core.cf.dev.eu-de-central.msh.host
   default: https://osb-couchdb.cf.dev.eu-de-central.msh.host
 ```
-
-**(Optional):** Service Key Manager 
-```yaml
-haproxy:
-  auth:
-    token: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
-  uri: https://osb-service-key-manager.cf.dev.eu-de-central.msh.host/agents/5b07c382ab86f100075e1292/schemas?type=listen
-```
-The Service Key Manager is described in detail in a later section. It enables Service Brokers to support the Service Key functionality of Cloud Foundry
 
 **(Optional):** Site Configuration 
 ```yaml
