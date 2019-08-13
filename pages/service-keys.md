@@ -12,38 +12,7 @@
 ---
 
 # Service Keys
-Service Keys is a functionality introduced by Cloud Foundry, which enables users to create credentials, which are not bound to an specific application but instead used to connect to a Servce Instance from the outside. A Service Key can be created in Cloud Foundry via `cf create-service-key serviceInstanceName`. 
-
-Offering this functionality makes sense, when you have Services like database, where user might want to access the database with a fat client to analyse problems. To offer this functionality in your Service Broker add a class named `HaProxyServiceImpl` to: `de.evoila.cf.broker.haproxy`, with the following contents:
-
-```java
-@Service
-@ConditionalOnBean(HAProxyConfiguration.class)
-public class HAProxyServiceImpl extends HAProxyService {
-
-	@Override
-	public Mode getMode(ServerAddress serverAddress) {
-		return Mode.TCP;
-	}
-	
-	@Override
-	public List<String> getOptions(ServerAddress serverAddress) {
-		return new ArrayList<>();
-	}
-}
-```
-
-Having defined this class, the Service Key functionality should be autowired and configured automatically. It reuses the `bind-service` functionality of the Service Broker to create Service Keys.
-
-*Note: to enable Service Keys via Service Broker Dashboard in UI see Dashboard section and configure `serviceKeys: true` in the module definition.*
-
-```js
-sharedModules: {
-  general: true,
-  backup: false,
-  serviceKeys: true // This needs to be set to truw
-}
-```
+Service Keys are no longer supported by the evoila open service brokers.
 
 ---
 
