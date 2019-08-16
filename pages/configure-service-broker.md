@@ -184,7 +184,13 @@ For deploying the service-broker on Cloud Foundry you also have to change the de
 buildpack: https://github.com/cloudfoundry/java-buildpack.git#v4.19.1
 ```
 
-Last but not least add the following line to the environment section in the mannifest and you are good to go.
+Furthermore if the spring cloud config is used, the spring-cloud.version has to be updated to the Greenwich release.
+
+```yaml
+<spring-cloud.version>Greenwich.RELEASE</spring-cloud.version>
+```
+
+Last but not least add the following line to the environment section in the manifest and you are good to go.
 
 ```yaml
 env:
