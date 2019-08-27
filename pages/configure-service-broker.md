@@ -453,14 +453,22 @@ endpoints:
   default: https://osb-couchdb.cf.dev.eu-de-central.msh.host
 ```
 
-**(Optional):** Service Key Manager 
+**(Optional):** Enabling Service Keys
+To enable the handling and creation of Service Keys in the Service Broker, add and set the following property to `true` in your configuration.
 ```yaml
-haproxy:
-  auth:
-    token: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
-  uri: https://osb-service-key-manager.cf.dev.eu-de-central.msh.host/agents/5b07c382ab86f100075e1292/schemas?type=listen
+service-keys:
+    enabled: true
 ```
-The Service Key Manager is described in detail in a later section. It enables Service Brokers to support the Service Key functionality of Cloud Foundry
+
+*Note: To enable Service Keys via Service Broker Dashboard in UI see Dashboard section and configure `serviceKeys: true` in the module definition.*
+
+```js
+sharedModules: {
+  general: true,
+  backup: false,
+  serviceKeys: true // This needs to be set to true
+}
+```
 
 **(Optional):** Site Configuration 
 ```yaml
