@@ -30,7 +30,7 @@
 # Components
 In the OSB Framework we speek of components as submodules, which are sliced to fullfil a specific task. On the development level these are things like providing the OSB REST API , persiting data to a database and deploying Service Instance with an automation technology. 
 
-Currently supported OSB-API version: v2.14
+Currently supported OSB-API version: v2.15
 
 ## Core
 ### Core
