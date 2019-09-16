@@ -15,13 +15,12 @@ This Documents sums up all OSB-API features, that got added after v2.12, the fra
 
 ## Open Service Broker API v2.14
 
-- fetching: Added GET endpoints for service instances and bindings.
+- Fetching: Added GET endpoints for service instances and bindings.
 
-- Asynchronous Bindings: Bindings can be performed async, and a polling endpoint has been added.
-
-- 
-
+- Asynchronous Bindings: Bindings can be performed aynchronous and a polling endpoint has been added.
 
 ## Open Service Broker API v2.15
 
-- Request Identity: A Platform might wish to uniquely identify a specific request as it flows throughout the system. For example, this might be used for logging for request tracing purposes.
+- Request Identity: A platform might wish to uniquely identify a specific request. This might be used for logging and request tracing purposes.
+
+- Maintenance Info: The service catalogs now holds an object to specify consequences of an provision or update action. This gives the user information about the steps initiated by the service broker when triggering such an action.
