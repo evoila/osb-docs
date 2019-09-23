@@ -6,11 +6,12 @@
 4. [Service Keys](service-keys.md)
 5. [Backup Agent](backup-agent.md)
 6. [Development](development.md)
-7. [IDE & Runtime](ide-runtime.md)
-8. [Contribution](#contribution)
+7. [Open Service Broker API Features](osb-features.md)
+8. [IDE & Runtime](ide-runtime.md)
+9. [Contribution](#contribution)
     * 8.1 [Create an Issue](#create-an-issue)
     * 8.2 [Pull Request](#pull-request)
-9. [License](license.md)
+10. [License](license.md)
 ---
 
 # Contribution
