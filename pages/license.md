@@ -8,7 +8,7 @@
 6. [Development](development.md)
 7. [Open Service Broker API Features](osb-features.md)
 8. [IDE & Runtime](ide-runtime.md)
-8. [Contribution](contribution.md)
+9. [Contribution](contribution.md)
 10. [License](#license)
 ---
 

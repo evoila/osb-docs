@@ -5,6 +5,7 @@
 3. [Configuring a Service Broker](configure-service-broker.md)
 4. [Service Keys](service-keys.md)
 5. [Backup Agent](backup-agent.md)
+6. [Development](development.md)
 7. [Open Service Broker API Features](osb-features.md)
 8. [IDE & Runtime](ide-runtime.md)
 9. [Contribution](contribution.md)
