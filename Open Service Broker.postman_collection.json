@@ -1,0 +1,914 @@
+{
+	"info": {
+		"_postman_id": "d93267f9-3158-4542-b796-152b9fd217d4",
+		"name": "Open Service Broker",
+		"description": "This collection holds calls for Open Service Brokers.\n\nThe requests use postman environment variables to run fully functionaly.\nFollowing variables are required to be set manualy:\n\nbasic-user\t\t-> username for basic auth\nbasic-pw\t\t-> password for basic auth\nurl\t\t\t\t-> url to connect against (does not hold protocol!)\nport\t\t\t-> port to connect against\nprotocol\t\t-> protocol to use (http or https)\nservice_id\t\t-> guid of the service definition to use\nplan_id\t\t\t-> guid of the service plan to use\nold_plan_id\t\t-> guid of the previous used plan (used for service instance updates)\nosb-API-Header\t-> value for the X-Broker-API-Version header\n\nYou can often set variables in postman via rightclick on marked text. This is useful when setting service and plan ids.\n\nFollowing variables will be set and used automatically, so be sure to be using a postman environment:\n\nlast_instance_guid\t-> is set when provisioning a service instance\nlast_binding_guid\t-> is set when creating a binding\n",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Service Binding",
+			"item": [
+				{
+					"name": "Create Binding",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "c2b67c93-6092-4af6-8523-5521d64e4ffb",
+								"exec": [
+									"var guid = (function() {",
+									"  function s4() {",
+									"    return Math.floor((1 + Math.random()) * 0x10000)",
+									"               .toString(16)",
+									"               .substring(1);",
+									"  }",
+									"  return function() {",
+									"    return s4() + s4() + '-' + s4() + '-' + s4() + '-' +",
+									"           s4() + '-' + s4() + s4() + s4();",
+									"  };",
+									"})();",
+									"postman.setEnvironmentVariable(\"last_binding_guid\",guid());",
+									"",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": [
+								{
+									"key": "password",
+									"value": "{{basic-pw}}",
+									"type": "string"
+								},
+								{
+									"key": "username",
+									"value": "{{basic-user}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [
+							{
+								"key": "X-Broker-API-Version",
+								"value": "{{osb-API-Header}}",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"service_id\" : \"7542E5CE-D659-4B63-98B8-7D6361BF1EB4\",\n\t\"plan_id\" : \"195DBCB1-8F93-4F29-8BE4-411309DD520C\",\n\t\"app_guid\" : \"sr-development-test-app\"\n}"
+						},
+						"url": {
+							"raw": "{{protocol}}://{{url}}:{{port}}/v2/service_instances/{{last_instance_guid}}/service_bindings/{{last_binding_guid}}?accepts_incomplete=true",
+							"protocol": "{{protocol}}",
+							"host": [
+								"{{url}}"
+							],
+							"port": "{{port}}",
+							"path": [
+								"v2",
+								"service_instances",
+								"{{last_instance_guid}}",
+								"service_bindings",
+								"{{last_binding_guid}}"
+							],
+							"query": [
+								{
+									"key": "accepts_incomplete",
+									"value": "true"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Binding Polling",
+					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": [
+								{
+									"key": "password",
+									"value": "{{basic-pw}}",
+									"type": "string"
+								},
+								{
+									"key": "username",
+									"value": "{{basic-user}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "X-Broker-API-Version",
+								"value": "{{osb-API-Header}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{protocol}}://{{url}}:{{port}}/v2/service_instances/{{last_instance_guid}}/service_bindings/{{last_binding_guid}}/last_operation?service_id={{service_id}}&plan_id={{plan_id}}",
+							"protocol": "{{protocol}}",
+							"host": [
+								"{{url}}"
+							],
+							"port": "{{port}}",
+							"path": [
+								"v2",
+								"service_instances",
+								"{{last_instance_guid}}",
+								"service_bindings",
+								"{{last_binding_guid}}",
+								"last_operation"
+							],
+							"query": [
+								{
+									"key": "service_id",
+									"value": "{{service_id}}"
+								},
+								{
+									"key": "plan_id",
+									"value": "{{plan_id}}"
+								},
+								{
+									"key": "operation",
+									"value": "task12",
+									"disabled": true
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Fetch Binding",
+					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": [
+								{
+									"key": "password",
+									"value": "{{basic-pw}}",
+									"type": "string"
+								},
+								{
+									"key": "username",
+									"value": "{{basic-user}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "X-Broker-API-Version",
+								"value": "{{osb-API-Header}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{protocol}}://{{url}}:{{port}}/v2/service_instances/{{last_instance_guid}}/service_bindings/{{last_binding_guid}}",
+							"protocol": "{{protocol}}",
+							"host": [
+								"{{url}}"
+							],
+							"port": "{{port}}",
+							"path": [
+								"v2",
+								"service_instances",
+								"{{last_instance_guid}}",
+								"service_bindings",
+								"{{last_binding_guid}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Binding",
+					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": [
+								{
+									"key": "password",
+									"value": "{{basic-pw}}",
+									"type": "string"
+								},
+								{
+									"key": "username",
+									"value": "{{basic-user}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "X-Broker-API-Version",
+								"value": "{{osb-API-Header}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "{{protocol}}://{{url}}:{{port}}/v2/service_instances/{{last_instance_guid}}/service_bindings/{{last_binding_guid}}?accepts_incomplete=true&service_id={{service_id}}&plan_id={{plan_id}}",
+							"protocol": "{{protocol}}",
+							"host": [
+								"{{url}}"
+							],
+							"port": "{{port}}",
+							"path": [
+								"v2",
+								"service_instances",
+								"{{last_instance_guid}}",
+								"service_bindings",
+								"{{last_binding_guid}}"
+							],
+							"query": [
+								{
+									"key": "accepts_incomplete",
+									"value": "true"
+								},
+								{
+									"key": "service_id",
+									"value": "{{service_id}}"
+								},
+								{
+									"key": "plan_id",
+									"value": "{{plan_id}}"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Service Instance",
+			"item": [
+				{
+					"name": "Provision Instance",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "17c7067e-14ec-4e91-8296-8c75665583b3",
+								"exec": [
+									"var guid = (function() {",
+									"  function s4() {",
+									"    return Math.floor((1 + Math.random()) * 0x10000)",
+									"               .toString(16)",
+									"               .substring(1);",
+									"  }",
+									"  return function() {",
+									"    return s4() + s4() + '-' + s4() + '-' + s4() + '-' +",
+									"           s4() + '-' + s4() + s4() + s4();",
+									"  };",
+									"})();",
+									"postman.setEnvironmentVariable(\"last_instance_guid\",guid());"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": [
+								{
+									"key": "password",
+									"value": "{{basic-pw}}",
+									"type": "string"
+								},
+								{
+									"key": "username",
+									"value": "{{basic-user}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "X-Broker-API-Version",
+								"value": "{{osb-API-Header}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"service_id\" : \"{{service_id}}\",\n\t\"plan_id\" : \"{{plan_id}}\",\n\t\"organization_guid\" : \"org\",\n\t\"space_guid\" : \"space\",\n\t\"context\" : {},\n\t\"parameters\" : {}\n}"
+						},
+						"url": {
+							"raw": "{{protocol}}://{{url}}:{{port}}/v2/service_instances/{{last_instance_guid}}?accepts_incomplete=true",
+							"protocol": "{{protocol}}",
+							"host": [
+								"{{url}}"
+							],
+							"port": "{{port}}",
+							"path": [
+								"v2",
+								"service_instances",
+								"{{last_instance_guid}}"
+							],
+							"query": [
+								{
+									"key": "accepts_incomplete",
+									"value": "true"
+								}
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "osb-example Provision Instance",
+							"originalRequest": {
+								"method": "PUT",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json",
+										"type": "text"
+									},
+									{
+										"key": "X-Broker-API-Version",
+										"value": "2.13",
+										"type": "text"
+									},
+									{
+										"key": "X-Broker-API-Originating-Identity",
+										"value": "cloudfoundry faketoken",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n\t\"service_id\" : \"7542E5CE-D659-4B63-98B8-7D6361BF1EB4\",\n\t\"plan_id\" : \"195DBCB1-8F93-4F29-8BE4-411309DD520C\",\n\t\"organization_guid\" : \"org\",\n\t\"space_guid\" : \"space\",\n\t\"context\" : {},\n\t\"parameters\" : {}\n}"
+								},
+								"url": {
+									"raw": "http://{{url}}:{{port}}/v2/service_instances/123abc?accepts_incomplete=true",
+									"protocol": "http",
+									"host": [
+										"{{url}}"
+									],
+									"port": "{{port}}",
+									"path": [
+										"v2",
+										"service_instances",
+										"123abc"
+									],
+									"query": [
+										{
+											"key": "accepts_incomplete",
+											"value": "true"
+										}
+									]
+								}
+							},
+							"status": "Accepted",
+							"code": 202,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "X-Content-Type-Options",
+									"value": "nosniff"
+								},
+								{
+									"key": "X-XSS-Protection",
+									"value": "1; mode=block"
+								},
+								{
+									"key": "Cache-Control",
+									"value": "no-cache, no-store, max-age=0, must-revalidate"
+								},
+								{
+									"key": "Pragma",
+									"value": "no-cache"
+								},
+								{
+									"key": "Expires",
+									"value": "0"
+								},
+								{
+									"key": "X-Frame-Options",
+									"value": "DENY"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json;charset=UTF-8"
+								},
+								{
+									"key": "Transfer-Encoding",
+									"value": "chunked"
+								},
+								{
+									"key": "Date",
+									"value": "Mon, 19 Aug 2019 08:05:34 GMT"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"operation\": \"Q2rnx7FKtrGxaVLaOayxK\",\n    \"dashboard_url\": \"https://osb-example.local/custom/v2/authentication/123abc\"\n}"
+						},
+						{
+							"name": "osb-example Provision Instance (auto guid)",
+							"originalRequest": {
+								"method": "PUT",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json",
+										"type": "text"
+									},
+									{
+										"key": "X-Broker-API-Version",
+										"value": "2.13",
+										"type": "text"
+									},
+									{
+										"key": "X-Broker-API-Originating-Identity",
+										"value": "cloudfoundry faketoken",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n\t\"service_id\" : \"7542E5CE-D659-4B63-98B8-7D6361BF1EB4\",\n\t\"plan_id\" : \"195DBCB1-8F93-4F29-8BE4-411309DD520C\",\n\t\"organization_guid\" : \"org\",\n\t\"space_guid\" : \"space\",\n\t\"context\" : {},\n\t\"parameters\" : {}\n}"
+								},
+								"url": {
+									"raw": "http://{{url}}:{{port}}/v2/service_instances/{{guid}}?accepts_incomplete=true",
+									"protocol": "http",
+									"host": [
+										"{{url}}"
+									],
+									"port": "{{port}}",
+									"path": [
+										"v2",
+										"service_instances",
+										"{{guid}}"
+									],
+									"query": [
+										{
+											"key": "accepts_incomplete",
+											"value": "true"
+										}
+									]
+								}
+							},
+							"status": "Accepted",
+							"code": 202,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "X-Content-Type-Options",
+									"value": "nosniff"
+								},
+								{
+									"key": "X-XSS-Protection",
+									"value": "1; mode=block"
+								},
+								{
+									"key": "Cache-Control",
+									"value": "no-cache, no-store, max-age=0, must-revalidate"
+								},
+								{
+									"key": "Pragma",
+									"value": "no-cache"
+								},
+								{
+									"key": "Expires",
+									"value": "0"
+								},
+								{
+									"key": "X-Frame-Options",
+									"value": "DENY"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json;charset=UTF-8"
+								},
+								{
+									"key": "Transfer-Encoding",
+									"value": "chunked"
+								},
+								{
+									"key": "Date",
+									"value": "Mon, 19 Aug 2019 08:06:30 GMT"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"operation\": \"tX3HrTR9HXQE13jtMmaXL\",\n    \"dashboard_url\": \"https://osb-example.local/custom/v2/authentication/{{guid}}\"\n}"
+						}
+					]
+				},
+				{
+					"name": "Service Instance Polling",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "5ef60b90-3caa-49cb-ae45-d852f0da1803",
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": [
+								{
+									"key": "password",
+									"value": "{{basic-pw}}",
+									"type": "string"
+								},
+								{
+									"key": "username",
+									"value": "{{basic-user}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "X-Broker-API-Version",
+								"value": "{{osb-API-Header}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{protocol}}://{{url}}:{{port}}/v2/service_instances/{{last_instance_guid}}/last_operation",
+							"protocol": "{{protocol}}",
+							"host": [
+								"{{url}}"
+							],
+							"port": "{{port}}",
+							"path": [
+								"v2",
+								"service_instances",
+								"{{last_instance_guid}}",
+								"last_operation"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update Instance",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "b77700cc-080d-401e-b2ae-8001b7a2b0ea",
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": [
+								{
+									"key": "password",
+									"value": "{{basic-pw}}",
+									"type": "string"
+								},
+								{
+									"key": "username",
+									"value": "{{basic-user}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "X-Broker-API-Version",
+								"value": "{{osb-API-Header}}",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"service_id\" : \"{{service_id}}\",\n\t\"plan_id\" : \"{{plan_id}}\",\n\t\"context\" : {},\n\t\"parameters\" : {},\n\t\"previous_values\": {\n    \t\"plan_id\": \"{{service_id}}\",\n    \t\"service_id\": \"{{old_plan_id}}\"\n\n  }\n}"
+						},
+						"url": {
+							"raw": "{{protocol}}://{{url}}:{{port}}/v2/service_instances/{{last_instance_guid}}?accepts_incomplete=true",
+							"protocol": "{{protocol}}",
+							"host": [
+								"{{url}}"
+							],
+							"port": "{{port}}",
+							"path": [
+								"v2",
+								"service_instances",
+								"{{last_instance_guid}}"
+							],
+							"query": [
+								{
+									"key": "accepts_incomplete",
+									"value": "true"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Fetch Service Instance",
+					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": [
+								{
+									"key": "password",
+									"value": "{{basic-pw}}",
+									"type": "string"
+								},
+								{
+									"key": "username",
+									"value": "{{basic-user}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "X-Broker-API-Version",
+								"value": "{{osb-API-Header}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{protocol}}://{{url}}:{{port}}/v2/service_instances/{{last_instance_guid}}",
+							"protocol": "{{protocol}}",
+							"host": [
+								"{{url}}"
+							],
+							"port": "{{port}}",
+							"path": [
+								"v2",
+								"service_instances",
+								"{{last_instance_guid}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Deprovision Service Instance",
+					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": [
+								{
+									"key": "password",
+									"value": "{{basic-pw}}",
+									"type": "string"
+								},
+								{
+									"key": "username",
+									"value": "{{basic-user}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "X-Broker-API-Version",
+								"value": "{{osb-API-Header}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "{{protocol}}://{{url}}:{{port}}/v2/service_instances/{{last_instance_guid}}?accepts_incomplete=true&service_id={{service_id}}&plan_id={{plan_id}}",
+							"protocol": "{{protocol}}",
+							"host": [
+								"{{url}}"
+							],
+							"port": "{{port}}",
+							"path": [
+								"v2",
+								"service_instances",
+								"{{last_instance_guid}}"
+							],
+							"query": [
+								{
+									"key": "accepts_incomplete",
+									"value": "true"
+								},
+								{
+									"key": "service_id",
+									"value": "{{service_id}}"
+								},
+								{
+									"key": "plan_id",
+									"value": "{{plan_id}}"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Get Catalogs",
+			"request": {
+				"auth": {
+					"type": "basic",
+					"basic": [
+						{
+							"key": "password",
+							"value": "{{basic-pw}}",
+							"type": "string"
+						},
+						{
+							"key": "username",
+							"value": "{{basic-user}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [
+					{
+						"key": "X-Broker-API-Version",
+						"value": "{{osb-API-Header}}",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "{{protocol}}://{{url}}:{{port}}/v2/catalog",
+					"protocol": "{{protocol}}",
+					"host": [
+						"{{url}}"
+					],
+					"port": "{{port}}",
+					"path": [
+						"v2",
+						"catalog"
+					]
+				}
+			},
+			"response": [
+				{
+					"name": "Get Catalogs",
+					"originalRequest": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "X-Broker-API-Version",
+								"value": "2.15",
+								"type": "text"
+							},
+							{
+								"key": "",
+								"value": "",
+								"type": "text",
+								"disabled": true
+							}
+						],
+						"url": {
+							"raw": "127.0.0.1:8080/v2/catalog",
+							"host": [
+								"127",
+								"0",
+								"0",
+								"1"
+							],
+							"port": "8080",
+							"path": [
+								"v2",
+								"catalog"
+							]
+						}
+					},
+					"status": "OK",
+					"code": 200,
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "Set-Cookie",
+							"value": "JSESSIONID=698F664048B61F71AE125608D89FF971; Path=/; HttpOnly"
+						},
+						{
+							"key": "X-Content-Type-Options",
+							"value": "nosniff"
+						},
+						{
+							"key": "X-XSS-Protection",
+							"value": "1; mode=block"
+						},
+						{
+							"key": "Cache-Control",
+							"value": "no-cache, no-store, max-age=0, must-revalidate"
+						},
+						{
+							"key": "Pragma",
+							"value": "no-cache"
+						},
+						{
+							"key": "Expires",
+							"value": "0"
+						},
+						{
+							"key": "X-Frame-Options",
+							"value": "DENY"
+						},
+						{
+							"key": "Content-Type",
+							"value": "application/json;charset=UTF-8"
+						},
+						{
+							"key": "Transfer-Encoding",
+							"value": "chunked"
+						},
+						{
+							"key": "Date",
+							"value": "Mon, 19 Aug 2019 08:01:05 GMT"
+						}
+					],
+					"cookie": [],
+					"body": "{\n    \"services\": [\n        {\n            \"id\": \"7542E5CE-D659-4B63-98B8-7D6361BF1EB4\",\n            \"name\": \"osb-example\",\n            \"description\": \"Managed SQL DB Service - Deploying a SQL Database in a dedicated and managed environment\",\n            \"bindable\": true,\n            \"plans\": [\n                {\n                    \"id\": \"195DBCB1-8F93-4F29-8BE4-411309DD520C\",\n                    \"name\": \"s\",\n                    \"description\": \"Deployment of a managed SQL Database to an existing shared SQL Cluster\",\n                    \"metadata\": {\n                        \"bullets\": [\n                            \"1 GB disk size\",\n                            \"super-fast\",\n                            \"awesome\"\n                        ],\n                        \"costs\": [\n                            {\n                                \"amount\": {\n                                    \"eur\": 10.732\n                                },\n                                \"unit\": \"monthly per vm\"\n                            },\n                            {\n                                \"amount\": {\n                                    \"eur\": 10.54,\n                                    \"usd\": 21.125\n                                },\n                                \"unit\": \"weekly per call\"\n                            }\n                        ],\n                        \"displayName\": \"Small DB\",\n                        \"instanceGroupConfig\": [],\n                        \"customParameters\": {},\n                        \"active\": true\n                    },\n                    \"free\": true\n                },\n                {\n                    \"id\": \"6A9FA1C9-F504-4498-97CE-CD45E477C46B\",\n                    \"name\": \"m\",\n                    \"description\": \"Deployment of a managed SQL Database to a dedicated VM\",\n                    \"metadata\": {\n                        \"instanceGroupConfig\": [],\n                        \"customParameters\": {},\n                        \"active\": true\n                    },\n                    \"free\": false\n                },\n                {\n                    \"id\": \"581806BA-A9FE-4B75-ACA5-6FEACE29EFF0\",\n                    \"name\": \"l\",\n                    \"description\": \"Deployment of a managed SQL Database to a dedicated VM\",\n                    \"metadata\": {\n                        \"instanceGroupConfig\": [],\n                        \"customParameters\": {},\n                        \"active\": true\n                    },\n                    \"free\": false\n                },\n                {\n                    \"id\": \"A94E6CB1-23F5-4015-BE94-4CF577CE737F\",\n                    \"name\": \"xl\",\n                    \"description\": \"Deployment of a managed SQL Database to a dedicated VM\",\n                    \"metadata\": {\n                        \"instanceGroupConfig\": [],\n                        \"customParameters\": {},\n                        \"active\": true\n                    },\n                    \"free\": false\n                }\n            ],\n            \"tags\": [],\n            \"metadata\": {\n                \"displayName\": \"osb-example\",\n                \"imageUrl\": \"https://cdn.shopify.com/s/files/1/1812/2525/products/Anime-Guardians-Of-The-Galaxy-2-Groot-Cos-Star-Lord-Bruce-Lee-Statue-9-Types-Action.jpg_640x640_7_1024x1024.jpg?v=1498458985\",\n                \"longDescription\": \"Managed, highly available, Example clusters in the cloud\",\n                \"providerDisplayName\": \"Meshcloud\",\n                \"documentationUrl\": \"http://docs.meshcloud.io\",\n                \"supportUrl\": \"http://support.meshcloud.io\"\n            },\n            \"requires\": [],\n            \"dashboard\": {\n                \"url\": \"https://osb-example.local/custom/v2/authentication\",\n                \"auth_endpoint\": \"https://uaa.local/oauth\"\n            },\n            \"instances_retrievable\": true,\n            \"bindings_retrievable\": true,\n            \"dashboard_client\": {\n                \"id\": \"osb-example.local\",\n                \"secret\": \"48070F71-5830-4FE4-BC90-9EB8108DFB28\",\n                \"redirect_uri\": \"https://osb-example.local/custom/v2/authentication\"\n            },\n            \"plan_updateable\": false\n        },\n        {\n            \"id\": \"8542E5CE-D659-4B63-98B8-7D6361BF1EB4\",\n            \"name\": \"osb-example-second\",\n            \"description\": \"Managed SQL DB Service - Deploying a SQL Database in a dedicated and managed environment\",\n            \"bindable\": true,\n            \"plans\": [\n                {\n                    \"id\": \"295DBCB1-8F93-4F29-8BE4-411309DD520C\",\n                    \"name\": \"s\",\n                    \"description\": \"Deployment of a managed SQL Database to an existing shared SQL Cluster\",\n                    \"metadata\": {\n                        \"instanceGroupConfig\": [],\n                        \"customParameters\": {},\n                        \"active\": true\n                    },\n                    \"free\": true\n                },\n                {\n                    \"id\": \"7A9FA1C9-F504-4498-97CE-CD45E477C46B\",\n                    \"name\": \"m\",\n                    \"description\": \"Deployment of a managed SQL Database to a dedicated VM\",\n                    \"metadata\": {\n                        \"instanceGroupConfig\": [],\n                        \"customParameters\": {},\n                        \"active\": true\n                    },\n                    \"free\": false\n                },\n                {\n                    \"id\": \"681806BA-A9FE-4B75-ACA5-6FEACE29EFF0\",\n                    \"name\": \"l\",\n                    \"description\": \"Deployment of a managed SQL Database to a dedicated VM\",\n                    \"metadata\": {\n                        \"instanceGroupConfig\": [],\n                        \"customParameters\": {},\n                        \"active\": true\n                    },\n                    \"free\": false\n                },\n                {\n                    \"id\": \"B94E6CB1-23F5-4015-BE94-4CF577CE737F\",\n                    \"name\": \"xl\",\n                    \"description\": \"Deployment of a managed SQL Database to a dedicated VM\",\n                    \"metadata\": {\n                        \"instanceGroupConfig\": [],\n                        \"customParameters\": {},\n                        \"active\": true\n                    },\n                    \"free\": false\n                }\n            ],\n            \"tags\": [],\n            \"metadata\": {\n                \"displayName\": \"osb-example-second\",\n                \"imageUrl\": \"https://cdn.shopify.com/s/files/1/1812/2525/products/Anime-Guardians-Of-The-Galaxy-2-Groot-Cos-Star-Lord-Bruce-Lee-Statue-9-Types-Action.jpg_640x640_7_1024x1024.jpg?v=1498458985\",\n                \"longDescription\": \"Managed, highly available, Example clusters in the cloud\",\n                \"providerDisplayName\": \"Meshcloud\",\n                \"documentationUrl\": \"http://docs.meshcloud.io\",\n                \"supportUrl\": \"http://support.meshcloud.io\"\n            },\n            \"requires\": [],\n            \"dashboard\": {\n                \"url\": \"https://osb-example.local/v2/authentication\",\n                \"auth_endpoint\": \"https://uaa.local/oauth\"\n            },\n            \"instances_retrievable\": true,\n            \"bindings_retrievable\": true,\n            \"dashboard_client\": {\n                \"id\": \"osb-example-second.local\",\n                \"secret\": \"58070F71-5830-4FE4-BC90-9EB8108DFB28\",\n                \"redirect_uri\": \"https://osb-example.local/v2/authentication\"\n            },\n            \"plan_updateable\": false\n        }\n    ]\n}"
+				}
+			]
+		}
+	],
+	"auth": {
+		"type": "basic",
+		"basic": [
+			{
+				"key": "password",
+				"value": "{{basic-pw}}",
+				"type": "string"
+			},
+			{
+				"key": "username",
+				"value": "{{basic-user}}",
+				"type": "string"
+			}
+		]
+	},
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"id": "0105b599-4bf7-4748-8e92-d9385a4d0c1f",
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"id": "44d36308-9146-41a2-9854-b69fe6281572",
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	]
+}

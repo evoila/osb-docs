@@ -12,10 +12,12 @@
       * 3.2.3 [Catalog Validation](#catalog-validation)  
 4. [Service Keys](service-keys.md)
 5. [Backup Agent](backup-agent.md)
-6. [Development](development.md)
-7. [IDE & Runtime](ide-runtime.md)
-8. [Contribution](contribution.md)
-9. [License](license.md)
+6. [Development](pages/development.md)
+7. [Open Service Broker API Features](pages/osb-features.md)
+8. [IDE & Runtime](ide-runtime.md)
+9. [Contribution](contribution.md)
+10. [License](license.md)
+
 ---
 
 
@@ -175,7 +177,7 @@ Change the spring-boot-starter-parent version in the **pom.xml** as well
 <parent>
 	<groupId>org.springframework.boot</groupId>
 	<artifactId>spring-boot-starter-parent</artifactId>
-	<version>2.1.5.RELEASE</version>
+	<version>2.1.7.RELEASE</version>
 </parent>
 ```
 
@@ -185,7 +187,13 @@ For deploying the service-broker on Cloud Foundry you also have to change the de
 buildpack: https://github.com/cloudfoundry/java-buildpack.git#v4.19.1
 ```
 
-Last but not least add the following line to the environment section in the mannifest and you are good to go.
+Furthermore if the spring cloud config is used, the spring-cloud.version has to be updated to the Greenwich release.
+
+```yaml
+<spring-cloud.version>Greenwich.RELEASE</spring-cloud.version>
+```
+
+Last but not least add the following line to the environment section in the manifest and you are good to go.
 
 ```yaml
 env:
