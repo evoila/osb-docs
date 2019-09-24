@@ -2,19 +2,20 @@
 # Table of Contents
 
 1. [Open Service Broker Framework (by evoila)](#open-service-broker-framework-by-evoila)
-    * 1.1 [What does that mean in detail?](#what-does-that-mean-in-detail)
-    * 1.2 [Terminology of the evoila OSB-Framework](#terminology-of-the-evoila-osb-framework)
-      * 1.2.1 [Shared Clusters (Existing Service)](#shared-clusters-existing-service)
-      * 1.2.2 [Dedicated VMs/Clusters](#dedicated-vms-and-clusters)
-      * 1.2.3 [Site](#site)
+     * 1.1 [What does that mean in detail?](#what-does-that-mean-in-detail)
+     * 1.2 [Terminology of the evoila OSB-Framework](#terminology-of-the-evoila-osb-framework)
+       * 1.2.1 [Shared Clusters (Existing Service)](#shared-clusters-existing-service)
+       * 1.2.2 [Dedicated VMs/Clusters](#dedicated-vms-and-clusters)
+       * 1.2.3 [Site](#site)
 2. [Components](pages/components.md)
 3. [Configuring a Service Broker](pages/configure-service-broker.md)
 4. [Service Keys](pages/service-keys.md)
 5. [Backup Agent](pages/backup-agent.md)
 6. [Development](pages/development.md)
-7. [IDE & Runtime](pages/ide-runtime.md)
-8. [Contribution](pages/contribution.md)
-9. [License](pages/license.md)
+7. [Open Service Broker API Features](pages/osb-features.md)
+8. [IDE & Runtime](pages/ide-runtime.md)
+9. [Contribution](pages/contribution.md)
+10. [License](pages/license.md)
 ---
 
 # Open Service Broker Framework (by evoila)

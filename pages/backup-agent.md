@@ -7,10 +7,11 @@
 5. [Backup Agent](#backup-agent)
     * 5.1 [Configuration in the Service Definition](#configuration-in-the-service-definition)
     * 5.2 [Implementation of the Backup Connector](#implementation-of-the-backup-connector)
-6. [Development](development.md)
-7. [IDE & Runtime](ide-runtime.md)
-8. [Contribution](contribution.md)
-9. [License](license.md)
+6. [Development](pages/development.md)
+7. [Open Service Broker API Features](pages/osb-features.md)
+8. [IDE & Runtime](pages/ide-runtime.md)
+9. [Contribution](pages/contribution.md)
+10. [License](pages/license.md)
 ---
 
 # Backup Agent
