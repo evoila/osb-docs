@@ -6,7 +6,7 @@
 4. [Service Keys](service-keys.md)
 5. [Backup Agent](backup-agent.md)
 6. [Development](#development)
-7. [Open Service Broker API Features](osb-features.md)
+7. [Open Service Broker API Features](osb-api-features.md)
     * [7.1 Open Service Broker API v2.13](#open-service-broker-api-v2.13)
     * [7.2 Open Service Broker API v2.14](#open-service-broker-api-v2.14)
     * [7.3 Open Service Broker API v2.15](#open-service-broker-api-v2.15)

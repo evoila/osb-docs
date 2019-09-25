@@ -11,7 +11,7 @@
     * 6.2 [Backends](#backends)
       * 6.2.1 [MongoDB](#mongodb)
       * 6.2.2 [RabbitMQ](#rabbitmq)
-7. [Open Service Broker API Features](osb-features.md)
+7. [Open Service Broker API Features](osb-api-features.md)
 8. [IDE & Runtime](ide-runtime.md)
 9. [Contribution](contribution.md)
 10. [License](license.md)
