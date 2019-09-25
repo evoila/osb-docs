@@ -9,10 +9,11 @@
       * 3.2.2 [Plans](#plans)
         * 3.2.2.1 [Platform](#platform)
         * 3.2.2.2 [Metadata](#metadata)
+      * 3.2.3 [Catalog Validation](#catalog-validation)  
 4. [Service Keys](service-keys.md)
 5. [Backup Agent](backup-agent.md)
-6. [Development](pages/development.md)
-7. [Open Service Broker API Features](pages/osb-features.md)
+6. [Development](development.md)
+7. [Open Service Broker API Features](osb-api-features.md)
 8. [IDE & Runtime](ide-runtime.md)
 9. [Contribution](contribution.md)
 10. [License](license.md)
@@ -484,6 +485,23 @@ site:
 ```
 
 The Site Configuration is an additional way of configuring the Service Broker with custom properties, which are Site specific. In this example we see the configuration of IPs of backend servers, which are used to configure the Service Broker Deployment Manifest during deployment time. 
+
+### Catalog Validation
+
+This part describes how to configure the optional catalog validation of the service broker. When activated, a validation is performed during startup of the broker and logs are generated according to the result of the validation process. At this point in time, the catalog validator contains following checks:
+* Check whether the ids of the service definitions and service plans are GUIDs
+* Check whether the catalog has at least one service definition and each service definition has at least one service plan
+* Check whether the version string of maintenance_info of each plan is in line with Semantic Versioning 2 (if maintenance_info object is present)
+
+
+```yaml
+config:
+  catalog:
+    validate: true
+    strict: true
+```
+
+To enable catalog validation set `validate: true` and for a strict validation process set `strict: true`. A strict validation process will cancel the startup if the catalog is invalid, so set this flag with caution.
 
 ---
 
