@@ -579,7 +579,7 @@
 					"response": []
 				},
 				{
-					"name": "Update Instance",
+					"name": "Parameters Update Instance",
 					"event": [
 						{
 							"listen": "prerequest",
@@ -623,7 +623,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n\t\"service_id\" : \"{{service_id}}\",\n\t\"plan_id\" : \"{{plan_id}}\",\n\t\"context\" : {},\n\t\"parameters\" : {},\n\t\"previous_values\": {\n    \t\"plan_id\": \"{{service_id}}\",\n    \t\"service_id\": \"{{old_plan_id}}\"\n\n  }\n}"
+							"raw": "{\n\t\"service_id\" : \"{{service_id}}\",\n\t\"plan_id\" : \"{{plan_id}}\",\n\t\"parameters\" : {},\n\t\"previous_values\": {\n    \t\"parameters\" : {}\n  }\n}"
 						},
 						"url": {
 							"raw": "{{protocol}}://{{url}}:{{port}}/v2/service_instances/{{last_instance_guid}}?accepts_incomplete=true",
@@ -644,6 +644,145 @@
 								}
 							]
 						}
+					},
+					"response": []
+				},
+				{
+					"name": "Plan Update Instance",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "b77700cc-080d-401e-b2ae-8001b7a2b0ea",
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": [
+								{
+									"key": "password",
+									"value": "{{basic-pw}}",
+									"type": "string"
+								},
+								{
+									"key": "username",
+									"value": "{{basic-user}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "X-Broker-API-Version",
+								"value": "{{osb-API-Header}}",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"service_id\" : \"{{service_id}}\",\n\t\"plan_id\" : \"{{plan_id}}\",\n\t\"previous_values\": {\n    \t\"plan_id\": \"{{old_plan_id}}\"\n  }\n}"
+						},
+						"url": {
+							"raw": "{{protocol}}://{{url}}:{{port}}/v2/service_instances/{{last_instance_guid}}?accepts_incomplete=true",
+							"protocol": "{{protocol}}",
+							"host": [
+								"{{url}}"
+							],
+							"port": "{{port}}",
+							"path": [
+								"v2",
+								"service_instances",
+								"{{last_instance_guid}}"
+							],
+							"query": [
+								{
+									"key": "accepts_incomplete",
+									"value": "true"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Context Update Instance",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "b77700cc-080d-401e-b2ae-8001b7a2b0ea",
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": [
+								{
+									"key": "password",
+									"value": "{{basic-pw}}",
+									"type": "string"
+								},
+								{
+									"key": "username",
+									"value": "{{basic-user}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "X-Broker-API-Version",
+								"type": "text",
+								"value": "{{osb-API-Header}}"
+							},
+							{
+								"key": "Content-Type",
+								"type": "text",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"service_id\" : \"{{service_id}}\",\n\t\"plan_id\" : \"{{plan_id}}\",\n\t\"context\" : {\n\t\t\t\"organization_guid\" : \"org-guid\",\n\t\t\t\"organization_name\" : \"org\",\n\t\t\t\"organization_annotations\" : {\n\t\t\t\t\"my-org-annotation\" : \"my-org-annotation-value\"\n\t\t\t},\n\t\t\t\"space_guid\" : \"space-guid\",\n\t\t\t\"space_name\" : \"altered_space_name\",\n\t\t\t\"space_annotations\" : {\n\t\t\t\t\"my-spac-annotation\" : \"my-space-annotation-value\"\n\t\t\t},\n\t\t\t\"instance_name\" : \"test-instance\",\n\t\t\t\"instance_annotations\" : {\n\t\t\t\t\"my-instance-annotation\" : \"my-instance-annotation-value\"\n\t\t\t}\n\t}\n\n}"
+						},
+						"url": {
+							"raw": "{{protocol}}://{{url}}:{{port}}/v2/service_instances/{{last_instance_guid}}?accepts_incomplete=true",
+							"protocol": "{{protocol}}",
+							"host": [
+								"{{url}}"
+							],
+							"port": "{{port}}",
+							"path": [
+								"v2",
+								"service_instances",
+								"{{last_instance_guid}}"
+							],
+							"query": [
+								{
+									"key": "accepts_incomplete",
+									"value": "true"
+								}
+							]
+						},
+						"description": "Required fields are:\n- organization_guid\n- organization_name\n- space_guid\n- space_name\n- instance_name"
 					},
 					"response": []
 				},
@@ -750,6 +889,339 @@
 					"response": []
 				}
 			]
+		},
+		{
+			"name": "Error Provoking",
+			"item": [
+				{
+					"name": "Provision same Instance again",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "17c7067e-14ec-4e91-8296-8c75665583b3",
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": [
+								{
+									"key": "password",
+									"value": "{{basic-pw}}",
+									"type": "string"
+								},
+								{
+									"key": "username",
+									"value": "{{basic-user}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "X-Broker-API-Version",
+								"value": "{{osb-API-Header}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"service_id\" : \"{{service_id}}\",\n\t\"plan_id\" : \"{{plan_id}}\",\n\t\"organization_guid\" : \"org\",\n\t\"space_guid\" : \"space\",\n\t\"context\" : {},\n\t\"parameters\" : {}\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{protocol}}://{{url}}:{{port}}/v2/service_instances/{{last_instance_guid}}?accepts_incomplete=true",
+							"protocol": "{{protocol}}",
+							"host": [
+								"{{url}}"
+							],
+							"port": "{{port}}",
+							"path": [
+								"v2",
+								"service_instances",
+								"{{last_instance_guid}}"
+							],
+							"query": [
+								{
+									"key": "accepts_incomplete",
+									"value": "true"
+								}
+							]
+						},
+						"description": "Calls a provision on the previous provisioned instance again. Meant to provoke error behavior or get the same instance after clearing the database."
+					},
+					"response": [
+						{
+							"name": "osb-example Provision Instance (auto guid)",
+							"originalRequest": {
+								"method": "PUT",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json",
+										"type": "text"
+									},
+									{
+										"key": "X-Broker-API-Version",
+										"value": "2.13",
+										"type": "text"
+									},
+									{
+										"key": "X-Broker-API-Originating-Identity",
+										"value": "cloudfoundry faketoken",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n\t\"service_id\" : \"7542E5CE-D659-4B63-98B8-7D6361BF1EB4\",\n\t\"plan_id\" : \"195DBCB1-8F93-4F29-8BE4-411309DD520C\",\n\t\"organization_guid\" : \"org\",\n\t\"space_guid\" : \"space\",\n\t\"context\" : {},\n\t\"parameters\" : {}\n}"
+								},
+								"url": {
+									"raw": "http://{{url}}:{{port}}/v2/service_instances/{{guid}}?accepts_incomplete=true",
+									"protocol": "http",
+									"host": [
+										"{{url}}"
+									],
+									"port": "{{port}}",
+									"path": [
+										"v2",
+										"service_instances",
+										"{{guid}}"
+									],
+									"query": [
+										{
+											"key": "accepts_incomplete",
+											"value": "true"
+										}
+									]
+								}
+							},
+							"status": "Accepted",
+							"code": 202,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "X-Content-Type-Options",
+									"value": "nosniff"
+								},
+								{
+									"key": "X-XSS-Protection",
+									"value": "1; mode=block"
+								},
+								{
+									"key": "Cache-Control",
+									"value": "no-cache, no-store, max-age=0, must-revalidate"
+								},
+								{
+									"key": "Pragma",
+									"value": "no-cache"
+								},
+								{
+									"key": "Expires",
+									"value": "0"
+								},
+								{
+									"key": "X-Frame-Options",
+									"value": "DENY"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json;charset=UTF-8"
+								},
+								{
+									"key": "Transfer-Encoding",
+									"value": "chunked"
+								},
+								{
+									"key": "Date",
+									"value": "Mon, 19 Aug 2019 08:06:30 GMT"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"operation\": \"tX3HrTR9HXQE13jtMmaXL\",\n    \"dashboard_url\": \"https://osb-example.local/custom/v2/authentication/{{guid}}\"\n}"
+						},
+						{
+							"name": "osb-example Provision Instance",
+							"originalRequest": {
+								"method": "PUT",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json",
+										"type": "text"
+									},
+									{
+										"key": "X-Broker-API-Version",
+										"value": "2.13",
+										"type": "text"
+									},
+									{
+										"key": "X-Broker-API-Originating-Identity",
+										"value": "cloudfoundry faketoken",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n\t\"service_id\" : \"7542E5CE-D659-4B63-98B8-7D6361BF1EB4\",\n\t\"plan_id\" : \"195DBCB1-8F93-4F29-8BE4-411309DD520C\",\n\t\"organization_guid\" : \"org\",\n\t\"space_guid\" : \"space\",\n\t\"context\" : {},\n\t\"parameters\" : {}\n}"
+								},
+								"url": {
+									"raw": "http://{{url}}:{{port}}/v2/service_instances/123abc?accepts_incomplete=true",
+									"protocol": "http",
+									"host": [
+										"{{url}}"
+									],
+									"port": "{{port}}",
+									"path": [
+										"v2",
+										"service_instances",
+										"123abc"
+									],
+									"query": [
+										{
+											"key": "accepts_incomplete",
+											"value": "true"
+										}
+									]
+								}
+							},
+							"status": "Accepted",
+							"code": 202,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "X-Content-Type-Options",
+									"value": "nosniff"
+								},
+								{
+									"key": "X-XSS-Protection",
+									"value": "1; mode=block"
+								},
+								{
+									"key": "Cache-Control",
+									"value": "no-cache, no-store, max-age=0, must-revalidate"
+								},
+								{
+									"key": "Pragma",
+									"value": "no-cache"
+								},
+								{
+									"key": "Expires",
+									"value": "0"
+								},
+								{
+									"key": "X-Frame-Options",
+									"value": "DENY"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json;charset=UTF-8"
+								},
+								{
+									"key": "Transfer-Encoding",
+									"value": "chunked"
+								},
+								{
+									"key": "Date",
+									"value": "Mon, 19 Aug 2019 08:05:34 GMT"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"operation\": \"Q2rnx7FKtrGxaVLaOayxK\",\n    \"dashboard_url\": \"https://osb-example.local/custom/v2/authentication/123abc\"\n}"
+						}
+					]
+				},
+				{
+					"name": "Create same Binding again",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "c2b67c93-6092-4af6-8523-5521d64e4ffb",
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": [
+								{
+									"key": "password",
+									"value": "{{basic-pw}}",
+									"type": "string"
+								},
+								{
+									"key": "username",
+									"value": "{{basic-user}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [
+							{
+								"key": "X-Broker-API-Version",
+								"value": "{{osb-API-Header}}",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"service_id\" : \"7542E5CE-D659-4B63-98B8-7D6361BF1EB4\",\n\t\"plan_id\" : \"195DBCB1-8F93-4F29-8BE4-411309DD520C\",\n\t\"app_guid\" : \"sr-development-test-app\"\n}"
+						},
+						"url": {
+							"raw": "{{protocol}}://{{url}}:{{port}}/v2/service_instances/{{last_instance_guid}}/service_bindings/{{last_binding_guid}}?accepts_incomplete=true",
+							"protocol": "{{protocol}}",
+							"host": [
+								"{{url}}"
+							],
+							"port": "{{port}}",
+							"path": [
+								"v2",
+								"service_instances",
+								"{{last_instance_guid}}",
+								"service_bindings",
+								"{{last_binding_guid}}"
+							],
+							"query": [
+								{
+									"key": "accepts_incomplete",
+									"value": "true"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"description": "This collection holds requests to provoke errors at the brokers side and inspect its error handling and resistance to such procedures.",
+			"protocolProfileBehavior": {}
 		},
 		{
 			"name": "Get Catalogs",
