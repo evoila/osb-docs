@@ -168,7 +168,7 @@ The configuration of the service broker and the deployment manifest depends on t
 Also make sure to change to Java version in the **pom.xml**
 
 ```xml
-<java.version>12</java.version>
+<java.version>11</java.version>
 ```
 
 Change the spring-boot-starter-parent version in the **pom.xml** as well
@@ -197,7 +197,7 @@ Last but not least add the following line to the environment section in the mani
 
 ```yaml
 env:
-  JBP_CONFIG_OPEN_JDK_JRE: '{ jre: { version: 12.+ } }'
+  JBP_CONFIG_OPEN_JDK_JRE: '{ jre: { version: 11.+ } }'
 ```
 
 ## Catalog Configuration
@@ -206,6 +206,7 @@ The Catalog definition is an important part of the Service Broker deployment inf
 catalog:
   services:
   - bindable: false
+    plan_updateable: true
     dashboard:
       auth_endpoint: https://uaa.cf.domain.msh.host/oauth
       url: https://osb-lbaas.cf.domain.msh.host/v2/authentication
@@ -219,6 +220,7 @@ catalog:
     plans:
     - description: A simple LbaaS Bosh Deployment plan.
       free: false
+      plan_updateable: false
       id: BB0DD792-C405-411C-B527-9771FE34B2D9
       metadata:
         connections: 1000
