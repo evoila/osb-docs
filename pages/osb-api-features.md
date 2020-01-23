@@ -10,6 +10,7 @@
     * [7.1 Open Service Broker API v2.13](#open-service-broker-api-v2.13)
     * [7.2 Open Service Broker API v2.14](#open-service-broker-api-v2.14)
     * [7.3 Open Service Broker API v2.15](#open-service-broker-api-v2.15)
+    * [7.3 Restrictions](#Restrictions)
 8. [IDE & Runtime](ide-runtime.md)
 9. [Contribution](contribution.md)
 10. [License](license.md)
@@ -39,6 +40,11 @@ This Documents sums up all OSB-API features, that got added after v2.12, the fra
 - Request Identity: A platform might wish to uniquely identify a specific request. This might be used for logging and request tracing purposes.
 
 - Maintenance Info: The service catalogs now holds an object to specify consequences of an provision or update action. This gives the user information about the steps initiated by the service broker when triggering such an action.
+
+## Restrictions
+
+As our service brokers use instance and binding ids for internal referencing of objects these strings MUST be valid [GUIDs](#https://en.wikipedia.org/wiki/Universally_unique_identifier). All PUT Request that doesn't meet these requirements will be rejected with StatusCode 400 bad request. Read [here](https://github.com/openservicebrokerapi/servicebroker/blob/v2.15/spec.md) for more information about the open service broker API.
+
 
 <p align="center">
     <span ><a href="development.md"><- Previous</a></span>
