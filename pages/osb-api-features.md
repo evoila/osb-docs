@@ -43,7 +43,7 @@ This Documents sums up all OSB-API features, that got added after v2.12, the fra
 
 ## Restrictions
 
-As our service brokers use instance and binding ids for internal referencing of objects these strings MUST be valid [GUIDs](#https://en.wikipedia.org/wiki/Universally_unique_identifier). All PUT Request that doesn't meet these requirements will be rejected with StatusCode 400 bad request. Read [here](https://github.com/openservicebrokerapi/servicebroker/blob/v2.15/spec.md) for more information about the open service broker API.
+As our service brokers use instance and binding ids for internal referencing of objects these strings MUST be valid [GUIDs](#https://en.wikipedia.org/wiki/Universally_unique_identifier). Every PUT request that doesn't meet these requirements will be rejected with StatusCode 400 bad request. Read [here](https://github.com/openservicebrokerapi/servicebroker/blob/v2.15/spec.md) for more information about the open service broker API.
 
 
 <p align="center">
