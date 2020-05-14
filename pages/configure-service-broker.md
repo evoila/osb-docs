@@ -9,7 +9,8 @@
       * 3.2.2 [Plans](#plans)
         * 3.2.2.1 [Platform](#platform)
         * 3.2.2.2 [Metadata](#metadata)
-      * 3.2.3 [Catalog Validation](#catalog-validation)  
+      * 3.2.3 [Catalog Validation](#catalog-validation)
+    * 3.3 [SSL Certificates](#ssl-certificates)
 4. [Service Keys](service-keys.md)
 5. [Backup Agent](backup-agent.md)
 6. [Development](development.md)
@@ -168,7 +169,7 @@ The configuration of the service broker and the deployment manifest depends on t
 Also make sure to change to Java version in the **pom.xml**
 
 ```xml
-<java.version>12</java.version>
+<java.version>11</java.version>
 ```
 
 Change the spring-boot-starter-parent version in the **pom.xml** as well
@@ -197,7 +198,7 @@ Last but not least add the following line to the environment section in the mani
 
 ```yaml
 env:
-  JBP_CONFIG_OPEN_JDK_JRE: '{ jre: { version: 12.+ } }'
+  JBP_CONFIG_OPEN_JDK_JRE: '{ jre: { version: 11.+ } }'
 ```
 
 ## Catalog Configuration
@@ -206,6 +207,7 @@ The Catalog definition is an important part of the Service Broker deployment inf
 catalog:
   services:
   - bindable: false
+    plan_updateable: true
     dashboard:
       auth_endpoint: https://uaa.cf.domain.msh.host/oauth
       url: https://osb-lbaas.cf.domain.msh.host/v2/authentication
@@ -219,6 +221,7 @@ catalog:
     plans:
     - description: A simple LbaaS Bosh Deployment plan.
       free: false
+      plan_updateable: false
       id: BB0DD792-C405-411C-B527-9771FE34B2D9
       metadata:
         connections: 1000
@@ -268,6 +271,20 @@ When you are using the Dashboard and Core components of the OSB-Framework, the d
       id: osb-lbaas.cf.domain.com
       redirect_uri: https://osb-lbaas.cf.domain.com/custom/v2/authentication
       secret: DA2EDFE6-130C-4353-90EE-C202F2BD40F9
+```
+
+This framework uses spring boot resource server autoconfiguration.
+This means that all bearer tokens are checked by a Uaa or other identity provider.
+To ensure this, the issuer-url has to be configured like this:
+
+```yaml
+...
+spring:
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: https://uaa.cf.domain.com/oauth/token
 ```
 
 ### Plans
@@ -504,6 +521,34 @@ config:
 To enable catalog validation set `validate: true` and for a strict validation process set `strict: true`. A strict validation process will cancel the startup if the catalog is invalid, so set this flag with caution.
 
 ---
+
+### SSL Certificates
+
+To trust additional ssl certificates you can configure them like in the example below.
+
+```yaml
+spring:
+  ssl:
+    certificates:
+      uaa_ssl: |
+        -----BEGIN CERTIFICATE-----
+        .....
+         -----END CERTIFICATE-----
+      credhub_ca: |
+        -----BEGIN CERTIFICATE-----
+        .....
+         -----END CERTIFICATE-----
+```
+
+It is also possible to disable SSL certificate to allowing the service broker to accept all.
+However, this should NOT be used in production.
+```yaml
+spring:
+  ssl:
+    acceptselfsigned: true
+```
+
+
 
 <p align="center">
     <span ><a href="components.md"><- Previous</a></span>
