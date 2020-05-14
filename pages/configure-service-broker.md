@@ -14,10 +14,11 @@
 4. [Service Keys](service-keys.md)
 5. [Backup Agent](backup-agent.md)
 6. [Development](development.md)
-7. [Open Service Broker API Features](osb-api-features.md)
-8. [IDE & Runtime](ide-runtime.md)
-9. [Contribution](contribution.md)
-10. [License](license.md)
+7. [Local Deployment](deploy-service-broker-locally.md)
+8. [Open Service Broker API Features](osb-api-features.md)
+9. [IDE & Runtime](ide-runtime.md)
+10. [Contribution](contribution.md)
+11. [License](license.md)
 
 ---
 
@@ -265,11 +266,11 @@ When you are using the Dashboard and Core components of the OSB-Framework, the d
 ```yaml
 ...
     dashboard:
-      auth_endpoint: https://uaa.cf.domain.com/oauth
-      url: https://osb-lbaas.cf.domain.com/custom/v2/authentication
+      auth_endpoint: "https://uaa.cf.domain.com/oauth"
+      url: "https://osb-lbaas.cf.domain.com/custom/v2/authentication"
     dashboard_client:
       id: osb-lbaas.cf.domain.com
-      redirect_uri: https://osb-lbaas.cf.domain.com/custom/v2/authentication
+      redirect_uri: "https://osb-lbaas.cf.domain.com/custom/v2/authentication"
       secret: DA2EDFE6-130C-4353-90EE-C202F2BD40F9
 ```
 
@@ -284,7 +285,7 @@ spring:
     oauth2:
       resourceserver:
         jwt:
-          issuer-uri: https://uaa.cf.domain.com/oauth/token
+          issuer-uri: "https://uaa.cf.domain.com/oauth/token"
 ```
 
 ### Plans
