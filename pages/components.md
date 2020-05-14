@@ -188,21 +188,29 @@ With the credhub integration it is now possible to generate, store and use crede
 
 ### Requirements
 
-Before using the feature make sure to save all necessary information in the **application.yml**. These **MUST** be saved as follows:
+Before using the feature make sure to save all necessary information in the **application.yml**. This can be setup as follows:
 
     spring:
         credhub:
             url: https://<bosh-director>:8844
             bosh-director: <bosh-director-name>
-            keystore-password: <keystore-password>
             oauth2:
-                client-id: <client-id>
-                client-secret: <client-secret>
-                access-token-uri: https://<bosh-director>:8443/oauth/token
-            certificate:
-                ca: <ca-cert>
-                cert: <client-cert>
-                private-key: <private-key>
+                registration-id: credhub-client
+        security:
+            oauth2:
+              client:
+                registration:
+                    credhub-client:
+                    provider: uaa
+                    client-id: credhub-admin
+                    client-secret: my-secret
+                    authorization-grant-type: client_credentials
+                provider:
+                    uaa:
+                        token-uri: https:<bosh-director>/oauth/token
+
+For alternative oauth2 configurations refere to the [spring-security-documentation](https://docs.spring.io/spring-boot/docs/current/reference/htmlsingle/#boot-features-security-oauth2) and the [spring-credhub-documentation](https://docs.spring.io/spring-credhub/docs/2.0.0.RELEASE/reference/html5/#boot-configuration)
+
 
 #### Description
 
@@ -210,13 +218,9 @@ Before using the feature make sure to save all necessary information in the **ap
 | -------------------------------------- | ----------------- |
 | spring.credhub.url                     | URL of the environment where credhub is installed |
 | spring.credhub.bosh-director           | Name of the bosh director |
-| spring.credhub.keystore-password       | **(OPTIONAL)** User generated password to secure the keystore |
 | spring.credhub.oauth2.client-id        | Username for fetching an oauth token |
 | spring.credhub.oauth2.client-secret    | Password for fetching an oauth token |
 | spring.credhub.oauth2.access-token-uri | Uri to fetch an oauth token from, which is used to authenticate for generating, storing & deleting credentials |
-| spring.credhub.certificate.ca          | Credhub CA certificate, found in the creds.yml of the bosh director under "**credhub_ca.ca**" |
-| spring.credhub.certificate.cert        | Credhub client certificate, found in the creds.yml of the bosh director under "**credhub_ca.certificate**" |
-| spring.credhub.certificate.private-key | Credhub private key, found in the creds.yml of the bosh director under "**credhub_ca.private_key**"|
 
 ---
 

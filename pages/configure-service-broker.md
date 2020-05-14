@@ -9,7 +9,8 @@
       * 3.2.2 [Plans](#plans)
         * 3.2.2.1 [Platform](#platform)
         * 3.2.2.2 [Metadata](#metadata)
-      * 3.2.3 [Catalog Validation](#catalog-validation)  
+      * 3.2.3 [Catalog Validation](#catalog-validation)
+    * 3.3 [SSL Certificates](#ssl-certificates)
 4. [Service Keys](service-keys.md)
 5. [Backup Agent](backup-agent.md)
 6. [Development](development.md)
@@ -272,6 +273,20 @@ When you are using the Dashboard and Core components of the OSB-Framework, the d
       secret: DA2EDFE6-130C-4353-90EE-C202F2BD40F9
 ```
 
+This framework uses spring boot resource server autoconfiguration.
+This means that all bearer tokens are checked by a Uaa or other identity provider.
+To ensure this, the issuer-url has to be configured like this:
+
+```yaml
+...
+spring:
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: https://uaa.cf.domain.com/oauth/token
+```
+
 ### Plans
 The Plan definition is according to the Open Service Specification with extension made b the OSB Framework to provide a delcarative approach of feature enrichment on a plan level. This declarative approach enables Service Catalog managers, which are not necessarily developers to change/extend the Service Catalog without any coding. 
 
@@ -506,6 +521,34 @@ config:
 To enable catalog validation set `validate: true` and for a strict validation process set `strict: true`. A strict validation process will cancel the startup if the catalog is invalid, so set this flag with caution.
 
 ---
+
+### SSL Certificates
+
+To trust additional ssl certificates you can configure them like in the example below.
+
+```yaml
+spring:
+  ssl:
+    certificates:
+      uaa_ssl: |
+        -----BEGIN CERTIFICATE-----
+        .....
+         -----END CERTIFICATE-----
+      credhub_ca: |
+        -----BEGIN CERTIFICATE-----
+        .....
+         -----END CERTIFICATE-----
+```
+
+It is also possible to disable SSL certificate to allowing the service broker to accept all.
+However, this should NOT be used in production.
+```yaml
+spring:
+  ssl:
+    acceptselfsigned: true
+```
+
+
 
 <p align="center">
     <span ><a href="components.md"><- Previous</a></span>
