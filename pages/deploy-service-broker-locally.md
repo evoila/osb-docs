@@ -26,7 +26,7 @@ This tutorial describes how to set up a service broker locally with bosh-lite. I
 After following these steps you should be able to use your service broker to deploy a service on bosh-lite, manage it with the service-broker dashboard, save credentials in Credhub and use Uaa to authenticate users. Uaa and credhub are being deployed as a part of Bosh-lite.
 
 ## Prerequisite
-Before deploying your service broker you need a running bosh-lite, a mongoDB instance and the bosh release you wish to deploy. Note your service broker may needs to implement some feature to handle deployments correctly. If you don't have deployed bosh-lite yet, refer to the bosh documentation for instructions. For a mongoDB deployment a quick solution is docker. Read [here](https://phoenixnap.com/kb/docker-mongodb) on how to host mongoDB on docker.
+Before deploying your service broker you need a running bosh-lite, a mongoDB instance and the bosh release you wish to deploy. Note your service broker has to implement some feature to handle deployments correctly. If you don't have deployed bosh-lite yet, refer to the bosh documentation for instructions. For a mongoDB deployment a quick solution is docker. Read [here](https://phoenixnap.com/kb/docker-mongodb) on how to host mongoDB on docker.
 
 ## Bosh-lite config and service broker connection
 This subsection explains all necessary configuration for deploying a service on bosh-lite with a service broker.
