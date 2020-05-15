@@ -12,10 +12,11 @@
 4. [Service Keys](pages/service-keys.md)
 5. [Backup Agent](pages/backup-agent.md)
 6. [Development](pages/development.md)
-7. [Open Service Broker API Features](pages/osb-api-features.md)
-8. [IDE & Runtime](pages/ide-runtime.md)
-9. [Contribution](pages/contribution.md)
-10. [License](pages/license.md)
+7. [Local Deployment](deploy-service-broker-locally.md)
+8. [Open Service Broker API Features](pages/osb-api-features.md)
+9. [IDE & Runtime](pages/ide-runtime.md)
+10. [Contribution](pages/contribution.md)
+11. [License](pages/license.md)
 ---
 
 # Open Service Broker Framework (by evoila)

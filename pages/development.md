@@ -11,10 +11,11 @@
     * 6.2 [Backends](#backends)
       * 6.2.1 [MongoDB](#mongodb)
       * 6.2.2 [RabbitMQ](#rabbitmq)
-7. [Open Service Broker API Features](osb-api-features.md)
-8. [IDE & Runtime](ide-runtime.md)
-9. [Contribution](contribution.md)
-10. [License](license.md)
+7. [Local Deployment](deploy-service-broker-locally.md)
+8. [Open Service Broker API Features](osb-api-features.md)
+9. [IDE & Runtime](ide-runtime.md)
+10. [Contribution](contribution.md)
+11. [License](license.md)
 ---
 
 # Development
@@ -104,5 +105,5 @@ vm_types:
 <p align="center">
     <span ><a href="backup-agent.md"><- Previous</a></span>
 	    <span>&nbsp; | &nbsp;</span> 
-    <span><a href="osb-api-features.md">Next -></a></span>
+    <span><a href="deploy-service-broker-locally.md">Next -></a></span>
 </p>
