@@ -7,10 +7,10 @@
 5. [Backup Agent](backup-agent.md)
 6. [Development](development.md)
 8. [Open Service Broker API Features](osb-api-features.md)
-    * [7.1 Open Service Broker API v2.13](#open-service-broker-api-v2.13)
-    * [7.2 Open Service Broker API v2.14](#open-service-broker-api-v2.14)
-    * [7.3 Open Service Broker API v2.15](#open-service-broker-api-v2.15)
-    * [7.3 Restrictions](#Restrictions)
+    * [8.1 Open Service Broker API v2.13](#open-service-broker-api-v2.13)
+    * [8.2 Open Service Broker API v2.14](#open-service-broker-api-v2.14)
+    * [8.3 Open Service Broker API v2.15](#open-service-broker-api-v2.15)
+    * [8.3 Restrictions](#Restrictions)
 9. [IDE & Runtime](ide-runtime.md)
 10. [Contribution](contribution.md)
 11. [License](license.md)
@@ -47,7 +47,7 @@ As our service brokers use instance and binding ids for internal referencing of 
 
 
 <p align="center">
-    <span ><a href="development.md"><- Previous</a></span>
+    <span ><a href="deploy-service-broker-locally.md"><- Previous</a></span>
 	    <span>&nbsp; | &nbsp;</span> 
     <span><a href="ide-runtime.md">Next -></a></span>
 </p>

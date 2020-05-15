@@ -10,7 +10,7 @@
     * 7.1 [Prerequisite](#prerequisite)
     * 7.2 [Bosh-lite config and service broker connection](#bosh-lite-config-and-service-broker-connection)
       * 7.2.1 [Connect the service-broker to bosh-lite](#connect-the-service-broker-to-bosh-lite)
-      * 7.2.2 [Pepare bosh and service broker manifest](#pepare-bosh-and-service-broker.manifest)
+      * 7.2.2 [Prepare bosh and service broker manifest](#prepare-bosh-and-service-broker-manifest)
     * 7.3 [Setup Security Components](#setup-security-components)
       * 7.3.1 [Bosh-lite Uaa setup](#bosh-lite-uaa-setup)
       * 7.3.2 [Connect to bosh-lite credhub](#connect-to-bosh-lite-credhub)
@@ -23,16 +23,16 @@
 
 # How to depoly a service broker on your local machine with bosh-lite
 This tutorial describes how to set up a service broker locally with bosh-lite. It is focused on deploying a already created project based on osb-core.
- After following these steps you should be able to use your service broker to deploy a service on bosh-lite, mange it with the service-broker dashboard, safe credentials in Credhub and use Uaa to authenticate users. Uaa and credhub are being deployed as a part of Bosh-lite.
+After following these steps you should be able to use your service broker to deploy a service on bosh-lite, manage it with the service-broker dashboard, save credentials in Credhub and use Uaa to authenticate users. Uaa and credhub are being deployed as a part of Bosh-lite.
 
 ## Prerequisite
-Before deploying your service broker you need a running bosh-lite, a mongoDB instance and the bosh release you wish to deploy. Note your service broker may needs to implement some feature to handle deployments correctly. If you don't have deployed bosh-lite yet, refer to the bosh documentation for instructions. For a mongoDB deployment I recommend a docker container. We are hosting a docker compose file on github, that contains everything you possibly need. Refere [here](configure-service-broker.md#basic-configuration)
+Before deploying your service broker you need a running bosh-lite, a mongoDB instance and the bosh release you wish to deploy. Note your service broker may needs to implement some feature to handle deployments correctly. If you don't have deployed bosh-lite yet, refer to the bosh documentation for instructions. For a mongoDB deployment a quick solution is docker. Read [here](https://phoenixnap.com/kb/docker-mongodb) on how to host mongoDB on docker.
 
 ## Bosh-lite config and service broker connection
 This subsection explains all necessary configuration for deploying a service on bosh-lite with a service broker.
 
 ### Connect the service-broker to bosh-lite
-To use your service broker to depoy services on bosh-lite you need configure it in your application.yml file, like this:
+To use your service broker to deploy services on bosh-lite you need configure it in your application.yml file, like this:
 ```yaml
 bosh:
   host: 192.168.50.6
@@ -43,7 +43,7 @@ bosh:
   vip_network: floating
 ```
 
-If not modified by you, the `host` and `username` are always `192.168.50.6` and `admin`. The password can be found in the by bosh-lite automatically generated `creds.yml` file under `admin_password` To find the stemcellOs value run the command `bosh env`. It will return something like this:
+If not modified by you, the `host` and `username` are always `192.168.50.6` and `admin`. The password can be found in the by bosh-lite automatically generated `creds.yml` file under `admin_password` To find the value for `stemcellOs` run the command `bosh env`. It will return something like this:
 ```
 Name               bosh-lite  
 UUID               857d2ab1-c78b-4d93-9177-699267e94caf  
@@ -59,7 +59,7 @@ User               admin
 ```
 You can find under `Director Stemcell` the needed value and the `stemcellVersion`.
 
-## Pepare bosh and service broker manifest
+## Prepare bosh and service broker manifest
 The service you wish to deploy needs to be released on bosh-lite. To do this, create and upload your bosh release according to the [bosh documentation](https://bosh.io/docs/release/).
 
 Your service broker needs a `manifest.yml` file located under `resources/bosh`, for the bosh-release you wish to deploy. You need to ensure that this manifest is configured according to the bosh cloud configuration. To read the bosh cloud-config run the command `bosh cloud-config`. Read [here](https://bosh.io/docs/sample-manifest/) to learn more about bosh release manifests.
@@ -70,7 +70,7 @@ To access the service broker dashboard an oauth2 identity provider is necessary.
 Additionally, the bosh-lite credhub can be used to store credentials, instead of mongoDB.
 
 ### Bosh-lite Uaa setup
-Uaa needs an additional client and for testing we should add a user. For this we need to authenticate uaac with uaa. The necessary credentials can be found inside the `creds.yml`. To do so log in into uaa with uaac, by running the following commands:
+Uaa needs an additional client and for testing we should add a user. For this we need to authenticate uaac with uaa. The necessary credentials can be found inside the `creds.yml`. To do so log into uaa with uaac, by running the following commands:
 ```
 uaac target https://192.168.50.6:8443
 uaac token client get uaa_admin -s ((uaa_admin_client_secret))
@@ -137,7 +137,7 @@ spring:
 The ca can be found in `creds.yml` under the key `director_ssl.ca`. After this the dashboard of a deployed service is accessible through its dashboard URL. The user `appuser` with password `appusersecret` can be used to log in.
 
 ### Connect to bosh-lite credhub
-To use the bosh lite credhub as a credentials store, the service broker has to authenticate itself with the uaa. Credhub runs on the same IP as the director and uses the port `8844` The necessary `client-id` is called `credhub-admin` the `client-secret` is saved in the `creds.yml` under `credhub_admin_client_secret`. Credhub uses a different certificate that the uaa, so it all self-signed certificates need to be accepted or the `credhub ca` needs to be accepted in addition to the `director ca`. The `credhub ca` is saved in the `creds.yml` file in `credhub_ca.ca`. A credhub configuration with bosh lite looks like this:
+To use the bosh lite credhub as a credentials store, the service broker has to authenticate itself with the uaa. Credhub runs on the same IP as the director and uses the port `8844` The necessary `client-id` is called `credhub-admin` the `client-secret` is saved in the `creds.yml` under `credhub_admin_client_secret`. Credhub uses a different certificate that then uaa, so it all self-signed certificates need to be accepted or the `credhub ca` needs to be accepted in addition to the `director ca`. The `credhub ca` is saved in the `creds.yml` file in `credhub_ca.ca`. A credhub configuration with bosh lite looks like this:
 
 ```yaml
 spring:
@@ -173,11 +173,11 @@ spring:
 ```
 
 ## Creds.yml fields
-A Table with the fields in the service broker config and their matches needed from the `creds.yml` file and fix values:
+A table with the fields in the service broker config and their matches needed from the `creds.yml` file and fix values:
 
 | Field in service broker config | Field in creds.yml or Fix value |
 | ------------------------------ | ------------------------------- |
-| bosh.host:                     | 192.168.50.6                    |
+| bosh.host                      | 192.168.50.6                    |
 | bosh.username                  | admin                           |
 | bosh.password                  | ((admin_password))              |
 | bosh.vip_network               | floating                        |
@@ -186,7 +186,7 @@ A Table with the fields in the service broker config and their matches needed fr
 | spring.security.oauth2.client.registration.credhub-client.client-secret | ((credhub_admin_secret)) |
 | spring.security.oauth2.client.provider.uaa.token-url | "https://192.168.50.6:8443/oauth/token" |
 | spring.ssl.certificates.uaa_ssl | ((director_ssl.ca)) | 
-| spring.ssl.certificates.uaa_ssl | ((credhub_ca.ca)) | +
+| spring.ssl.certificates.uaa_ssl | ((credhub_ca.ca)) |
 
 <p align="center">
     <span ><a href="development.md"><- Previous</a></span>
