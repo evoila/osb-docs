@@ -52,6 +52,16 @@ spring:
     cache: true
     mode: LEGACYHTML5
 ```
+
+In addition to the usual server related configurations by spring, you can set a `retry-after` header to be used by last_operation endpoints like this:
+
+```yaml
+server:
+  retry-afer: 120
+
+```
+
+
 The basic configuration for communication with the backend database, RabbitMQ (Config Updates, Service Key Creation) and Thymeleaf for Service Broker dashboard delivery. 
 
 ```yaml
