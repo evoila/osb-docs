@@ -12,7 +12,7 @@
 4. [Service Keys](pages/service-keys.md)
 5. [Backup Agent](pages/backup-agent.md)
 6. [Development](pages/development.md)
-7. [Local Deployment](deploy-service-broker-locally.md)
+7. [Local Deployment](pages/deploy-service-broker-locally.md)
 8. [Open Service Broker API Features](pages/osb-api-features.md)
 9. [IDE & Runtime](pages/ide-runtime.md)
 10. [Contribution](pages/contribution.md)
