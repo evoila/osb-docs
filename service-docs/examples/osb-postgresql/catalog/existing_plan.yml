@@ -1,0 +1,11 @@
+    - description: A shared cluster for dev/test and really small apps
+      free: true
+      id: 2FC323491-858C-41F4-803A-2309C3230
+      metadata:
+        backup:
+          enabled: true
+          instance_group: haproxy
+        connections: 5
+        ingress_instance_group: haproxy
+      name: xs
+      platform: EXISTING_SERVICE

@@ -1,0 +1,198 @@
+schemas: &schemas
+        service_binding:
+          create:
+            parameters:
+              properties:
+                database:
+                  description: Specify the database for the service binding.
+                  type: string
+              schema: http://json-schema.org/draft-04/schema#
+              type: object
+        service_instance:
+          update: &schemaproperties
+            parameters:
+              properties:
+                postgres:
+                  properties:
+                    version:
+                      type: string
+                      default: "14"
+                    ssl:
+                      type: object
+                      properties:
+                        enabled:
+                          title: ssl enabled
+                          type: boolean
+                          default: true
+                        min_protocol_version:
+                          title: minimal TLS version
+                          type: string
+                          default: "TLSv1.2"
+                          enums:
+                          - TLSv1
+                          - TLSv1.1
+                          - TLSv1.2
+                          - TLSv1.3
+                          - ""
+                        max_protocol_version:
+                          title: minimal TLS version
+                          type: string
+                          default: "TLSv1.3"
+                          enums:
+                          - TLSv1
+                          - TLSv1.1
+                          - TLSv1.2
+                          - TLSv1.3
+                          - ""
+                    database:
+                      type: object
+                      properties:
+                        extensions:
+                          items:
+                          - type: string
+                            enums: &extension 
+                            - address_standardizer
+                            - address_standardizer_data_us
+                            - adminpack
+                            - amcheck
+                            - autoinc
+                            - bloom
+                            - bool_plperl
+                            - bool_plperlu
+                            - btree_gin
+                            - btree_gist
+                            - citext
+                            - cube
+                            - dblink
+                            - dict_int
+                            - dict_xsyn
+                            - earthdistance
+                            - file_fdw
+                            - fuzzystrmatch
+                            - hstore
+                            - hstore_plperl
+                            - hstore_plperlu
+                            - hstore_plpython2u
+                            - hstore_plpython3u
+                            - hstore_plpythonu
+                            - insert_username
+                            - intagg
+                            - intarray
+                            - isn
+                            - jsonb_plperl
+                            - jsonb_plperlu
+                            - jsonb_plpython2u
+                            - jsonb_plpython3u
+                            - jsonb_plpythonu
+                            - lo
+                            - ltree
+                            - ltree_plpython2u
+                            - ltree_plpython3u
+                            - ltree_plpythonu
+                            - moddatetime
+                            - old_snapshot
+                            - pageinspect
+                            - pg_buffercache
+                            - pgcrypto
+                            - pg_freespacemap
+                            - pg_prewarm
+                            - pgrowlocks
+                            - pg_stat_statements
+                            - pgstattuple
+                            - pg_surgery
+                            - pg_trgm
+                            - pg_visibility
+                            - plperl
+                            - plperlu
+                            - plpgsql
+                            - plpython3u
+                            - postgis
+                            - postgis_raster
+                            - postgis_sfcgal
+                            - postgis_tiger_geocoder
+                            - postgis_topology
+                            - postgres_fdw
+                            - refint
+                            - seg
+                            - sslinfo
+                            - tablefunc
+                            - tcn
+                            - tsm_system_rows
+                            - tsm_system_time
+                            - unaccent
+                            - uuid-ossp
+                            - xml2
+                          type: array
+                    config:
+                      properties:
+                        authentication_timeout:
+                          title: Authentication Timeout
+                          type: integer
+                          minimum: 1
+                          default: 30
+                        max_locks_per_transaction:
+                          title: Maximum Locks per Transaction
+                          type: integer
+                          minimum: 10
+                          default: 64
+                        max_pred_locks_per_page:
+                          title: Maximum Predicate Locks per Page
+                          type: integer
+                          minimum: 1
+                          default: 2
+                        max_pred_locks_per_relation:
+                          title: Maximum Predicate Locks per Relation
+                          type: integer
+                          default: -2
+                        max_pred_locks_per_transaction:
+                          title: Maximum Predicate Locks per Transaction
+                          type: integer
+                          minimum: 10
+                          default: 64
+                      required:
+                      - authentication_timeout
+                      - max_locks_per_transaction
+                      - max_pred_locks_per_transaction
+                      - max_pred_locks_per_relation
+                      - max_pred_locks_per_page
+                      title: General PostgreSQL Settings
+                      type: object
+                    databases:
+                      items:
+                      - properties:
+                          name:
+                            pattern: ^[A-Za-z0-9_-]+$
+                            type: string
+                          users:
+                            items:
+                            - type: string
+                            type: array
+                          extensions:
+                            items:
+                            - type: string
+                              enums: *extension 
+                            type: array
+                        required:
+                        - name
+                        type: object
+                      type: array
+                    users:
+                      items:
+                      - properties:
+                          admin:
+                            type: boolean
+                          password:
+                            type: string
+                          username:
+                            pattern: ^[A-Za-z0-9_-]+$
+                            type: string
+                        required:
+                        - username
+                        - password
+                        type: object
+                      type: array
+                  title: ProgreSQL Configuration
+                  type: object
+              schema: http://json-schema.org/draft-06/schema
+              type: object
+          create: *schemaproperties

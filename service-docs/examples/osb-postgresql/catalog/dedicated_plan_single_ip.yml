@@ -1,0 +1,24 @@
+    - description: A small instance for low requirement apps
+      free: false
+      id: 5903CFE9-95C0-4C62-BE6C-DA87664656F4
+      metadata:
+        backup:
+          enabled: true
+          instance_group: postgres
+        ingress_instance_group: postgres
+        instance_group_config:
+        - name: postgres
+          nodes: 1
+          persistent_disk_type: 10GB
+        - name: haproxy
+          nodes: 0 				#Single instance not need a Haproxy
+        networks:
+        - name: default
+        vm_type: small
+        properties:				#Only used by ip based plans
+          postgres:
+            ssl: #needed when set to ip/nodns-mode
+              cakey: ((<bosh-name>/osb/postgres/ca.private_key)) #bosh credhub path or string used as root-ca
+              ca: ((/<bosh-name>/osb/postgres/ca.certificate))((/<bosh-name>/osb/postgres/ca.ca)) #bosh credhub path or string used as root-ca
+      name: s-ip
+      platform: BOSH

@@ -1,0 +1,56 @@
+instance_groups:
+- azs:
+  - z1
+  - z2
+  - z3
+  instances: 3
+  jobs:
+  - name: zookeeper
+    properties:
+      zookeeper:
+        config:
+          autopurge_purge_interval: 24
+          autopurge_snap_retain_count: 3
+          cnx_timeout: 5
+          election_algorim: 3
+          force_sync: "yes"
+          global_outstanding_limit: 1000
+          init_limit: 5
+          leader_serves: "yes"
+          max_client_connections: 60
+          max_session_timeout: 40000
+          min_session_timeout: 4000
+          pre_allocation_size: 65536
+          snap_count: 100000
+          sync_enabled: true
+          sync_limit: 2
+          tick_time: 2000
+          warning_threshold_ms: 1000
+        security:
+          enabled: false
+    provides:
+      zookeeper:
+        shared: true
+    release: osb-bosh-kafka
+  name: zookeeper
+  networks:
+  - name: default
+  persistent_disk: 10240
+  stemcell: default
+  vm_type: default
+name: osb-zookeeper
+releases:
+- sha1: a8a441f8d4275d8e1c14b420820261e7bd565ead
+  url: https://s3.eu-central-1.amazonaws.com/kafka-boshrelease-pipeline-ev/osb-bosh-kafka-0.1.27.tgz
+  name: osb-bosh-kafka
+  version: 0.1.27
+stemcells:
+- alias: default
+  os: ubuntu-bionic
+  version: latest
+update:
+  canaries: 1
+  canary_watch_time: 1000-60000
+  max_in_flight: 1
+  serial: true
+  update_watch_time: 1000-60000

@@ -1,0 +1,24 @@
+    - description: A good toolbox providing availability and performance over five
+        nodes
+      free: false
+      id: DA183185-701A-41CB-BB0C-9CFC7DD95CB3
+      metadata:
+        customParameters: #only needed if dns should be used
+          dns: <service-dns> #postfix for dns, added to end of dns
+          cert: /<bosh-name>/osb/postgres/ca #bosh credhub path used as root-ca
+        backup:
+          enabled: true
+          instance_group: postgres
+        ingress_instance_group: haproxy
+        instance_group_config:
+        - name: postgres
+          nodes: 2
+          persistent_disk_type: 100GB
+          vm_type: small
+        - name: haproxy				#Haproxy need as Loadbalancer by patroni
+          nodes: 1
+          vm_type: small
+        networks:
+        - name: default
+      name: l
+      platform: BOSH
