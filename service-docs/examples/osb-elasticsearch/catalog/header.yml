@@ -1,0 +1,30 @@
+backup:
+  enabled: true
+bosh:
+  authentication: OAUTH
+  stemcellOs: ubuntu-xenial
+  stemcellVersion: latest
+  vip_network: floating
+catalog:
+  services:
+  - bindable: true
+    bindings_retrievable: true
+    dashboard:
+      auth_endpoint: https://login.<cf-system-url>/oauth
+      url: https://<broker-url>/custom/v2/authentication
+    dashboard_client:
+      id: <broker-url> #must be unique, doesn't need to be url
+      secret: change-me #credential - used by uaa, can be chosen freely
+    description: elasticsearch Instances
+    id: DDB51E45-17BB-45D4-B4BC-F074BABFA2F0
+    instances_retrievable: true
+    name: osb-elasticsearch-test
+    plan_updateable: true
+    metadata:
+      displayName: Elasticsearch
+      longDescription: Elasticsearch 7
+      providerDisplayName: evoila
+      documentationUrl: https://github.com/evoila/osb-docs
+      supportUrl: https://helpdesk.evoila.io
+      imageUrl: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAQAAAAEACAMAAABrrFhUAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAARFQTFRF/eu/f83Gv+f3f8/w7/n9EKGU7/n4//rvEKbj+8JBQLjp/NaA+bMRn9nU+r0x+8xh/vXfz+35v+biMK6iMLLnYMTs3/Lx/vDP+rgh/eGfQLSqz+zqn9v0IKibIKzlcMe/j9PNYMG4cMru/NuPr+H2+8dR3/P7UL7qULqx/eavr+Db/NJxPqSpj9XyAJ63faVHPqBqAKDcAJyiAJydAJuSAJ2tEJyEXaWNAJ/Mf8OmAJyYnKlVL6O3EKHTq6pH2qwdAJ7CvLVZb7WvMK+tn83EL59z7eW9EKKkQLa/AJ/Xr+Hwr+DmAJ/RfrywAJ2nXaJZP6V6QLW5Xq+tAJ68H6LFjKhjTqSbAKDh+a4BAJuN////xn+RyQAAAFt0Uk5T////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////AJz6uLwAAAuISURBVHja7J1ne+PGEYBBEgRJsFexd4qSGJ118eVix46dYqf3Rgn//4dEJwJbgAWwFaCTmY+ne7g7L2ZnZge7A8v7PxcLAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABGpWMrygwTQua8fao1nfVKr1Sc3PxAAnclBp+qENA67zrUDqOxaz0alpYuBEQBW+zkDOVhXCsCqPWck48kVAshO/TcE1pUB6ByeM5Za55oA7KJ+v1Fr1+v3lga5r9dPtXEUQf1qAFTC1t863Ve0x5f7UzjAtDrXAcCiH/9YY7AOL7RQkG3cXwOACTWntuEc+6ataRlomyc1oXbHMy4desS8AbQ1OmapkHOo5AqgrWdBCs+eCAqtSo4A2upPQjImkCPnB+CEZ7HLuqAxaaj5AR0AsP9v5FBgumkoxQINM77B+t94OUgHJwX3eQCoNPLV/3UGiECjkwOAQ976kwRa2QPY5a//6ypoSLsBS9sCyLXAjj1h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'
+    plans:
