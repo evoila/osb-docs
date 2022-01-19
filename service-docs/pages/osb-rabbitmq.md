@@ -14,10 +14,8 @@
     - [Change SSL Certificates](#change-ssl-certificates)
   - [Settings](#settings)
     - [Service Instance Settings Schema](#service-instance-settings-schema)
+      - [Server object](#server-object)
       - [SSL object](#ssl-object)
-      - [Backup object](#backup-object)
-    - [S3 object](#s3-object)
-      - [Clients object](#clients-object)
     - [Ingress and egress binding](#ingress-and-egress-binding)
     - [Built-In user credentials](#built-in-user-credentials)
   - [TODO FAQ](#todo-faq)
@@ -62,11 +60,16 @@ The OSB-Elasticsearch offers different service plans which vary in allocated mem
 ??SSL NICHT DEAKTIVIEREN WENN EINMAL ENABLED??
 ### Cluster
 
-A RabbitMQ cluster can consist of a single node but it is recommended to have at least 3 nodes if high availability is a concern. The master node is called *leader* and undertakes the task of queueing messages while the other nodes are called *mirrors*, which apply the operations that occur to the leader exactly in the same order as the leader and thus maintain the same state.
+The following image shows, how RabbitMQ nodes are managed:
+![RabbitMQ cluster](../assets/rabbitmq-cluster.png)
+
+A RabbitMQ cluster can consist of a single node but it is recommended to have at least 3 nodes if high availability is a concern. The master node is called *leader* and undertakes the task of queueing messages while the other nodes are called *mirrors*, which apply the operations that occur to the leader exactly in the same order as the leader and thus maintain the same state. Requests are sent to a HAProxy instance which redirects the requests to the leader node.
 
 If a mirror fails, no client needs to take any action or be informed about the failure. The cluster will still work and the mirror node will be restarted when the other nodes do not receive a heartbeat in time (the default time for net ticks is 60 seconds).
 
-If the leader fails the longes running mirror is promoted to leader. If no mirror is completely synchronized to the leader, messages that only existed on the leader will be lost.
+If the leader fails the longest running mirror is promoted to leader. If no mirror is completely synchronized to the leader, messages that only existed on the leader will be lost.
+
+(?Nutzn wir Mirrored Queue oder Quorum Queue?)
 
 An Elasticsearch cluster can consist of a single node, serving multiple purposes or multiple nodes that can be configured as general nodes or as nodes for specific roles. A general node is responsible for ingesting and filtering requests, processing HTTP requests and storing the data. If not specified, a node will serve as a general node.
 If the cluster consists of multiple nodes, they can be assigned specific roles instead of being used for multiple purposes.
@@ -98,13 +101,14 @@ A service instance can be created manually via the CLI-Command
 cf create-service SERVICE PLAN SERVICE_INSTANCE [-b BROKER] [-c PARAMETERS_AS_JSON] [-t TAGS]
 ```
 
-- **SERVICE** will be the name of the service broker which is likely going to be **osb-elasticsearch**
+- **SERVICE** will be the name of the service broker which is likely going to be **osb-rabbitmq**
 - **PLAN** is a plan offered by the service.
 - **SERVICE_INSTANCE** the name of the service instance, can be chosen freely.
 - **PARAMETERS_AS_JSON** contains additional parameters (?parameters drin lassen? funktioniert NOCH nicht) in JSON-format.
 
 For more information see [Cloud Foundry CLI Reference Guide](https://cli.cloudfoundry.org/en-US/v6/create-service.html)
 
+?Dashboard zeigt Parameter noch nicht?
 Aternatively, if there is a dashboard set up (like the Stratos Dashboard for example), it can be used to create a service instance.
 
 ### Update a Service Instance
@@ -122,8 +126,7 @@ For more information see [Cloud Foundry CLI Reference Guide](https://cli.cloudfo
 
 Aternatively, if there is a dashboard set up (like the Stratos Dashboard for example), it can be used to update a service instance.
 
-Keep in mind that **previous values will be overwritten**. In order to see the existing parameters you can use a dashboard or acquire the parameters via cli (see [Acquiring Service Instance Parameters](#acquiring-service-instance-parameters)).
-
+> **_IMPORTANT:_** Keep in mind that **previous values will be overwritten**. In order to see the existing parameters you can use a dashboard or acquire the parameters via cli (see [Acquiring Service Instance Parameters](#acquiring-service-instance-parameters)).
 ### Create a Service Binding
 
 A binding can be created manually via the CLI-Command 
@@ -155,65 +158,9 @@ The current parameters of a service instance can be retrieved via cli:
 
 ### Backup
 
-TODO Step-by-step Workaround
+TODO 
 
-Prerequisites:
-- Cloud Foundry CLI installed and logged in
-- Bosh CLI installed and logged in
-
-Step-by-step guide:
-1. Get the service GUID via the CLI command: ```cf service --guid **SERVICE_INSTANCE**```. **SERVICE_INSTANCE** must be replaced with the name of the OSB-Elasticsearch instance.
-2. Get the manifest from Bosh via the CLI command ```bosh manifest -d sb-**GUID**``` and save it in a file. **GUID** must be replaced with the GUID retreived in step 1.
-3. Depending on the release version of the OSB-Elasticsearch, there a two different approaches for step 3:
-     - Version x (?Version rausfinden) and earlier: For **every** instance group in the manifest, add the following field to the properties:
-     ```
-     elasticsearch:
-      backup: 
-        s3:
-          clients:
-            default:
-              access_key: **S3_ACCESS_KEY**
-              secret_key: **S3_SECRET KEY**
-    ```
-      **S3_ACCESS_KEY** must be replaced with the access key for the S3 storage.
-      **S3_SECRET_KEY** must be replaced with the secret key for the S3 storage.
-     - Version y (?Version rausfinden) and later: For **every** instance group in the manifest, add the following field to the properties:
-     ```
-     elasticsearch:
-      backup: 
-        s3:
-          clients:
-          - name: **CLIENT_NAME**
-            access_key: **S3_ACCESS_KEY**
-            secret_key: **S3_SECRET KEY**
-    ```
-      **CLIENT_NAME** is the name of the backup client, which can be set here (using the name **default** is recommended).
-      **S3_ACCESS_KEY** must be replaced with the access key for the S3 storage.
-      **S3_SECRET_KEY** must be replaced with the secret key for the S3 storage.
-4. Deploy the new manifest via ```bosh deploy -d sb-**GUID** **FILENAME**```. **GUID** must be replaced with the GUID retreived in step 1. **FILENAME** must be the name of the file that was retreived in step 2.
-5. Get the credentials by creating a service key via the command ```cf csk **SERVICE_INSTANCE** **SERVICE_KEY_NAME** -c '{"clientMode":"superuser"}'```. **SERVICE_INSTANCE** is the name of the OSB-Elasticsearch instance. **SERVICE_KEY_NAME** is the name of the service key which can be set.
-6. Create a new repository via the Elasticsearch API (see [snapshot repository API](https://www.elastic.co/guide/en/elasticsearch/plugins/7.7/repository-s3-repository.html))
-7. Finally a snapshot can be created via the Elasticsearch API (see [Take snapshot API](https://www.elastic.co/guide/en/elasticsearch/reference/7.7/snapshots-take-snapshot.html))
-
-To list all snapshots you can make the request 
-```
-GET /_snapshot/**REPOSITORY_NAME**/**SNAPSHOT_NAME**
-```
-**REPOSITORY_NAME** is the name of a repository. Alternatively, the wildcard **\*** or **_all** can be used to list 
-
-For more information, see [Get snapshot API](https://www.elastic.co/guide/en/elasticsearch/reference/7.7/get-snapshot-repo-api.html).
-TODO
-
-The following fields can/must be provided for a client:
-| Parameter | Type | Default Value | Description |
-| - | - | - | - |
-| name | string | - | The name of the client. Value MUST be set |
-| access_key | string | - | The access key of the S3 client. Value MUST be set |
-| secret_key | string | - | The secret key of the S3 client. Value MUST be set |
-| endpoint | string | "s3.amazonaws<span>.com</span>" | The S3 service endpoint to connect to |
-| read_timeout | string | "50s" | Socket timeout for connecting to S3. The value should specify the unit (e.g. "5s") |
-| max_retries | integer | 3 | Number of retries when a request fails |
-| use_throttle_retries | boolean | true | Whether retries should be throttled |
+??Backup
 
 TODO FUTURE FEATURE
 
@@ -246,10 +193,8 @@ If the IP variant is used and the root CA still valid, it is sufficient to use `
 
 ## Settings
 
-TODO FUTURE FEATURE
-
-This section covers different settings that can be made for the OSB-Elasticsearch and how they can be changed.
-Via the settings, certificate authorities and S3 backup clients can be added.
+This section covers different settings that can be made for the OSB-RabbitMQ and how they can be changed.
+Via the settings, multiple server settings can be changed, for example the plugins used by RabbitMQ and SSL settings.
 
 Settings can be sent as parameters of a create/update request of a service instance via CLI.
 
@@ -257,7 +202,12 @@ The CLI command will look like this:
 ```
 cf cs BROKERNAME PLAN SERVICENAME [-c PARAMETERS_AS_JSON]
 ```
-- **BROKERNAME** will be the name of the service broker which is likely going to be **osb-elasticsearch**(?check)
+or
+```
+cf update-service SERVICE_INSTANCE [-c PARAMETERS_AS_JSON]
+```
+> **_IMPORTANT:_** Keep in mind that **previous values will be overwritten**. In order to see the existing parameters you can use a dashboard or acquire the parameters via cli (see [Acquiring Service Instance Parameters](#acquiring-service-instance-parameters)).
+- **BROKERNAME** will be the name of the service broker which is likely going to be **osb-rabbitmq**
 - **PLAN** is the plan that is going to be used for the service instance
 - **SERVICENAME** is the name of the service which is up to the user
 - **PARAMETERS_AS_JSON** are the settings which are sent in json format
@@ -301,47 +251,42 @@ In the following section, the fields will be described.
 
 ### Service Instance Settings Schema
 
-The following settings are defined in the schema in service_plan.schemas.service_instance.**create**.parameters.properties.elasticsearch.properties and service_plan.schemas.service_instance.**update**.parameters.properties.elasticsearch.properties
+The following settings are defined in the schema in service_plan.schemas.service_instance.**create**.parameters.properties.rabbitmq.properties and service_plan.schemas.service_instance.**update**.parameters.properties.rabbitmq.properties (?überprüfen ob korrekt)
 
 | Parameter | Type | Default Value | Description |
 | - | - | - | - |
-| ssl | SSL object | - | Settings for SSL certificates |
-| backup | [Database](#database-object) object | - | Contains database exensions |
+| server | | | |
 
-#### SSL object
+
+#### Server object
 
 The SSL object contains the trusted certificate authorities and consists of the following properties:
 
 | Parameter | Type | Default Value | Description |
 | - | - | - | - |
-| certificate-authorities| string | - | A string that contains all the trusted CAs (example?)|
+| reverse_dns_lookup | boolean | false | Perform reverse DNS lookups when accepting a connection. RabbitMQctl will then display hostnames instead of IP addresses. |
+| disk_alarm_threshold | string | {mem_relative,0.4} | The threshold in bytes of free disk space at which rabbitmq will raise an alarm. "mem_relative" is relative to the RAM in the machine. Otherwise "absolute" can be used with optional units (e.g. "KB", "MB", "GB") behind an integer number. |
+| disk_free_limit | integer | 50000000 | Lower bound for the disk after which a disk alarm will be set |
+| plugins | array of strings | - | Plugins to be used by RabbitMQ. Valid values are "rabbitmq_management", "rabbitmq_mqtt", "rabbitmq_stomp", "rabbitmq_auth_mechanism_ssl", "rabbitmq_delayed_message_exchange". **"rabbitmq_management"** and **"rabbitmq_delayed_message_exchange"** are **required** |
+| handshake_timeout | integer | 10000 | Maximum amount of time allowed for the AMQP 0-9-1 and AMQP 1.0 handshake. |
+| ssl | [SSL](#ssl-object) object | - | The SSL object contains the configuration for SSL |
+| net_ticktime | integer | 130 | Time until a node is considered lost if no heartbeat is sent. |
+| num_ssl_acceptors | integer | 10 | Number of Erlang processes that will accept connections for the TLS. |
+| frame_max | integer | 131072 | Set the max permissible size of an AMQP frame (in bytes). |
+| channel_max | integer | integer | 2047 | Max permissible number of channels per connection. |
+| cluster_partition_handling | string | - | Cluster partition recovery mode. Valid values are "pause_minority" and "autoheal". |
+| num_tcp_acceptors | integer | 10 | Number of Erlang processes that will accept connections for the TCP. |
+| fd_limit | integer | 65536 | The file descriptor limit for the RabbitMQ process. |
+| vm_memory_high_watermark | number | 0.4 | Fraction of the high watermark limit at which queues start to page message out to disc in order to free up memory. |
 
-#### Backup object
+#### SSL object
 
 | Parameter | Type | Default Value | Description |
 | - | - | - | - |
-| s3 | [S3](#s3-object) object | - | |
-
-### S3 object
-
-| Parameter | Type | Default Value | Description |
-| - | - | - | - |
-| clients | array of [Clients](#clients-object) objects | - | Multiple S3 clients can be specified within the array |
-#### Clients object
-
-Each client represents a S3 backup client.  A further explanation of the clients-fields can be found in the [Elasticsearch guide](https://www.elastic.co/guide/en/elasticsearch/plugins/current/repository-s3-client.html).
-
-| Parameter | Type | Default Value | Description |
-| - | - | - | - |
-| name | string | - | The name of the client. Value MUST be set |
-| access_key | string | - | The access key of the S3 client. Value MUST be set |
-| secret_key | string | - | The secret key of the S3 client. Value MUST be set |
-| endpoint | string | "s3.amazonaws<span>.com</span>" | The S3 service endpoint to connect to |
-| read_timeout | string | "50s" | Socket timeout for connecting to S3. The value should specify the unit (e.g. "5s") |
-| max_retries | integer | 3 | Number of retries when a request fails |
-| use_throttle_retries | boolean | true | Whether retries should be throttled |
-
-END FUTURE
+| fail_if_no_peer_cert | boolean | - | Sets, whether RabbitMQ server should reject connection if there is no peer cert. |
+| handshake_timeout | integer | 5000 | TLS handshake timeout, in milliseconds. |
+| verify | string | verify_none | SSL Peer Verification (use 'verify_peer' or 'verifiy_none' to unable/disable) |
+| enabled | boolean | false | Enable SSL/TLS |
 
 ### Ingress and egress binding
 
