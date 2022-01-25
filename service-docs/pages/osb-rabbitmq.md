@@ -17,13 +17,12 @@
       - [Server object](#server-object)
       - [SSL object](#ssl-object)
     - [Ingress and egress binding](#ingress-and-egress-binding)
-    - [Built-In user credentials](#built-in-user-credentials)
   - [TODO FAQ](#todo-faq)
-    - [How a can view the status of the cluster?](#how-a-can-view-the-status-of-the-cluster)
+    - [How a can the status of the cluster be viewed?](#how-a-can-the-status-of-the-cluster-be-viewed)
     - [Cluster performance](#cluster-performance)
     - [etc](#etc)
-    - [OSB-Elasticsearch crashed](#osb-elasticsearch-crashed)
-    - [A Elasticsearch instance crashed (?anwendbar auf elasticsearch?)](#a-elasticsearch-instance-crashed-anwendbar-auf-elasticsearch)
+    - [OSB-RabbitMQ crashed](#osb-rabbitmq-crashed)
+    - [A Elasticsearch instance crashed (?anwendbar auf rabbitmq?)](#a-elasticsearch-instance-crashed-anwendbar-auf-rabbitmq)
     - [The size of the backup was bigger than expected (and failed) and now all of my storage space is occupied](#the-size-of-the-backup-was-bigger-than-expected-and-failed-and-now-all-of-my-storage-space-is-occupied)
   - [Appendix](#appendix)
 
@@ -33,60 +32,41 @@
 
 RabbitMQ is a lightweight message broker that can be deployed in distributed and federated configurations to meet high-scale, high-availability requirements. RabbitMQ lets developers control the routing of the messages by using the messages metadata instead of having the message broker administrator define the routes. RabbitMQ is used worldwide at small startups and large enterprises and tens of thousands of users which makes it one of the most popular open source message brokers.
 
-Elasticsearch is a distributed, JSON-based RESTful search and analytics engine. Elasticsearch supports many type of of searches, for example structured, unstructured geo and metric searches and lets you aggregate the search data for easier scaling. It is based on Apache Lucene and makes use of inverted indices which allows a fast processing of full text queries. According to [DB-Engines](https://db-engines.com/en/ranking/search+engine), Elasticsearch is the most popular search engine.
-
 ### Key Features
 
-Elasticsearch is a comprehensive software that provides many features. Some of the key features are:
+- **Flexible Routing**: Messages are routed through exchanges before arriving at queues. RabbitMQ features several built-in exchange types (direct, topic, fanout and headers) for typical routing logic. For more complex routing you can [bind exchanges together](https://www.rabbitmq.com/extensions.html#routing) or even write your own exchange type as a plugin.
+- **Highly Available Queues**: By mirroring queues across several machines in a cluster, messages are safe even in the event of hardware failure. For more information, see [What is Mirroring?](https://www.rabbitmq.com/ha.html#what-is-mirroring).
+- **Multi-protocol**: RabbitMQ supports messaging over a variety of messaging protocols. For more information, see [Which Protocols does RabitMQ support?](https://www.rabbitmq.com/protocols.html).
+- **Client Libraries for many Languages**: RabbitMQ has several official client libraries. Libraries exist for, among many other programming languages, Java (and Spring), .NET, Ruby, Python, Javascript (and Node.js) and Go. For a complete list, see [Clients Libraries and Developer Tools](https://www.rabbitmq.com/devtools.html).
+- **Management UI**: RabbitMQ has an integrated [management UI](https://www.rabbitmq.com/management.html) which allows for monitoring and controlling of the message broker.
+- **Tracing**: RabbitMQ has a [firehose](https://www.rabbitmq.com/firehose.html) feature which makes it able to see every message that is published and every message that is delivered so that, for example, unacked messages can be found. 
+- **Plugin System**: RabbitMQ ships with a variety of plugins extending it. Plugins can be selected by sending request parameters within a create/update request sent to the broker (see[Settings](#settings)). Additionally, own plugins can be written (?werden Kunde eigene Plugins schreiben? oder lieber raus nehmen?).
 
-- **Asynchronous messaging**: RabbitMQ supports [multiple messaging protocols](https://www.rabbitmq.com/protocols.html), [message queuing](https://www.rabbitmq.com/tutorials/tutorial-two-python.html), [delivery acknowledgement](https://www.rabbitmq.com/reliability.html), [flexible routing to queues](https://www.rabbitmq.com/tutorials/tutorial-four-python.html) and [multiple exchange types](https://www.rabbitmq.com/tutorials/amqp-concepts.html).
-- **Cross-language messaging**: RabbitMQ has several official client libraries such as: Java, .NET, PHP, Python, JavaScript, Ruby, Go and and [many others](https://www.rabbitmq.com/devtools.html).
-- **Distributed deployment**: RabbitMQ supports clustering. ??? The OSB-RabbitMQ is formed by using Eureka (?wahrscheinlich was anderes, im Moment Platzhalter).
-- **Authentication and authorization**: RabbitMQ provides pluggable [authorization and authentication](https://www.rabbitmq.com/access-control.html) that supports [TLS](https://www.rabbitmq.com/ssl.html) and [LDAP](https://www.rabbitmq.com/ldap.html).
-- **Managing and monitoring**: RabbitMQ provides a HTTP-API, command line tool and UI for managing and monitoring. 
+A complete list of features can be found [here](https://www.rabbitmq.com/features.html).
 
-A complete list of features can be found [here](https://www.elastic.co/elasticsearch/features).
-
-For more information, see the [Elasticsearch guide](https://www.elastic.co/guide/en/elasticsearch/reference/7.7/index.html).
-
-> **_IMPORTANT:_** The OSB-Elasticsearch sets XMS and XMX (minimum and maximum heap size) of the Java Virtual Machine Options to 46% (änderbar?).
+For more information, see the [RabbitMQ Documentation](https://www.rabbitmq.com/documentation.html).
 
 This project is part of our service broker project. For documentation of the service broker see [evoila/osb-docs](https://github.com/evoila/osb-docs).
-The OSB-Elasticsearch offers different service plans which vary in allocated memory, cpu, disc-size and number of vms created for Elasticsearch.
+The OSB-Elasticsearch offers different service plans which vary in allocated memory, cpu, disc-size and number of vms created for Elasticsearch. (gleich?)
 
 ### Software used by OSB-RabbitMQ
-- **Elasticsearch**: 6.8.0, 7.7.1
+- **RabbitMQ**: ???3.6.12
 
-??SSL NICHT DEAKTIVIEREN WENN EINMAL ENABLED??
 ### Cluster
 
-The following image shows, how RabbitMQ nodes are managed:
-![RabbitMQ cluster](../assets/rabbitmq-cluster.png)
 
-A RabbitMQ cluster can consist of a single node but it is recommended to have at least 3 nodes if high availability is a concern. The master node is called *leader* and undertakes the task of queueing messages while the other nodes are called *mirrors*, which apply the operations that occur to the leader exactly in the same order as the leader and thus maintain the same state. Requests are sent to a HAProxy instance which redirects the requests to the leader node.
+
+A RabbitMQ cluster can consist of a single node but it is recommended to have at least 3 nodes if high availability is a concern. The master node is called *leader* and undertakes the task of queueing messages while the other nodes are called *mirrors*, which apply the operations that occur to the leader exactly in the same order as the leader and thus maintain the same state. Requests to a RabbitMQ instance are first sent to a HAProxy instance which then redirects the requests to the leader node.
 
 If a mirror fails, no client needs to take any action or be informed about the failure. The cluster will still work and the mirror node will be restarted when the other nodes do not receive a heartbeat in time (the default time for net ticks is 60 seconds).
 
-If the leader fails the longest running mirror is promoted to leader. If no mirror is completely synchronized to the leader, messages that only existed on the leader will be lost.
+If the leader fails, the longest running mirror is promoted to leader. If no mirror is completely synchronized to the leader, messages that only existed on the leader will be lost.
 
-(?Nutzn wir Mirrored Queue oder Quorum Queue?)
+> **_IMPORTANT:_** The amount of master-eligible nodes together with the general nodes must be odd. (?odd wird hier gar nicht gebraucht, da einfach der longest running mirror ausgewählt wird, oder?)
 
-An Elasticsearch cluster can consist of a single node, serving multiple purposes or multiple nodes that can be configured as general nodes or as nodes for specific roles. A general node is responsible for ingesting and filtering requests, processing HTTP requests and storing the data. If not specified, a node will serve as a general node.
-If the cluster consists of multiple nodes, they can be assigned specific roles instead of being used for multiple purposes.
-The following nodes are supported by the OSB-Elasticsearch which can be defined in the plan of the service catalog:
-- **General node**: A node that serves as a multi-purpose-node (functionality of all specific nodes combined). If many resources are needed, splitting a node into multiple nodes with different roles is recommended.
-- **Master-eligible node**: A node that serves as master node. A master node is responsible for lightweight cluster-wide actions such as creating or deleting an index, tracking which nodes are part of the cluster, and deciding which shards to allocate to which nodes. In case of a failure of the master node, the remaining master-eligible nodes elect a different master-eligible node as master node. 
-- **Coordinating node**: A coordinating node is responsible for receiving client requests, forwarding them to the data nodes that hold the data and combining the data nodes results into a single global resultset. Coordinating nodes have a medium compute, memory and network usage.
-- **Data node**: Data nodes hold the shards containing the documents that have been indexed. Data nodes are responsible for handling operations like CRUD, search and aggregations. They have a high storage, memory and compute usage and a medium usage of network resources.
-- **Ingest node**: Ingest nodes can execute pre-processing pipelines, composed of one or more ingest processors. For example, an ingest node can be used for filtering a PUT request by the client which it receives from a coordinating node. Ingest nodes have a high compute and a medium memory and network usage.
-
-> **_IMPORTANT:_** The amount of master-eligible nodes together with the general nodes must be odd.
-
-
-The following image shows the data processing flow of the nodes:
-![Elasticsearch node dataflow](../assets/dataflow-nodes.png)
-
-Machine learning nodes are not supported by OSB-Elasticsearch (?wass passiert, wenn man trotzdem ne machine learning node in den plan haut?). Further information about nodes can be found in the [Elasticsearch guide](https://www.elastic.co/guide/en/elasticsearch/reference/7.7/modules-node.html).
+(?Bild anpassen? Kasten "RabbitMQ Service Instance" um Cluster und HAProxy?)
+The following image shows, how RabbitMQ nodes are managed:
+![RabbitMQ cluster](../assets/rabbitmq-cluster.png)
 
 ## TODO Requirements
 - [Cloud Foundry CLI](https://docs.cloudfoundry.org/cf-cli/install-go-cli.html)
@@ -104,11 +84,11 @@ cf create-service SERVICE PLAN SERVICE_INSTANCE [-b BROKER] [-c PARAMETERS_AS_JS
 - **SERVICE** will be the name of the service broker which is likely going to be **osb-rabbitmq**
 - **PLAN** is a plan offered by the service.
 - **SERVICE_INSTANCE** the name of the service instance, can be chosen freely.
-- **PARAMETERS_AS_JSON** contains additional parameters (?parameters drin lassen? funktioniert NOCH nicht) in JSON-format.
+- **PARAMETERS_AS_JSON** contains additional parameters in JSON-format.
 
 For more information see [Cloud Foundry CLI Reference Guide](https://cli.cloudfoundry.org/en-US/v6/create-service.html)
 
-?Dashboard zeigt Parameter noch nicht?
+?Zeigt dashboard parameter? Info raus?Erzeugen geht ja theoretisch
 Aternatively, if there is a dashboard set up (like the Stratos Dashboard for example), it can be used to create a service instance.
 
 ### Update a Service Instance
@@ -119,11 +99,11 @@ cf update-service SERVICE_INSTANCE [-p NEW_PLAN] [-c PARAMETERS_AS_JSON] [-t TAG
 ```
 
 - **SERVICE_INSTANCE** is be the name of the previously created service instance.
-- **PARAMETERS_AS_JSON** contains additional parameters (?parameters drin lassen? funktioniert NOCH nicht) in JSON-format.
+- **PARAMETERS_AS_JSON** contains additional parameters in JSON-format.
 
 For more information see [Cloud Foundry CLI Reference Guide](https://cli.cloudfoundry.org/en-US/v6/update-service.html)
 
-
+?Zeigt dashboard parameter? Info raus?Erzeugen geht ja theoretisch
 Aternatively, if there is a dashboard set up (like the Stratos Dashboard for example), it can be used to update a service instance.
 
 > **_IMPORTANT:_** Keep in mind that **previous values will be overwritten**. In order to see the existing parameters you can use a dashboard or acquire the parameters via cli (see [Acquiring Service Instance Parameters](#acquiring-service-instance-parameters)).
@@ -131,17 +111,18 @@ Aternatively, if there is a dashboard set up (like the Stratos Dashboard for exa
 
 A binding can be created manually via the CLI-Command 
 ```
-cf bind-service APP_NAME SERVICE_INSTANCE [-c PARAMETERS_AS_JSON] [--binding-name BINDING_NAME]
+cf bind-service APP_NAME SERVICE_INSTANCE [--binding-name BINDING_NAME]
 ```
 
 - **APP_NAME** ist the name of the previously created app that gets the binding injected.
 - **SERVICE_INSTANCE** is be the name of the previously created service instance.
-- **PARAMETERS_AS_JSON** contains additional parameters in JSON-format.
+(?parameters werden nicht gebraucht, da kein schema für service_binding)
 
 
 For more information see [Cloud Foundry CLI Reference Guide](https://cli.cloudfoundry.org/en-US/v6/bind-service.html).
-After creating a binding, the app has to be restarted for the changes to take effect. (??Copy from git repo md)
+After creating a binding, the app has to be restarted for the changes to take effect. (??muss rabbitmq service dann neu gestartet werden?)
 
+?Falls bei create und update parameter nicht gehen: trotzdem auf dashboard bei create binding verweisen?
 Aternatively, if there is a dashboard set up (like the Stratos Dashboard for example), it can be used to create a service binding.
 
 ### Acquiring Service Instance Parameters
@@ -161,8 +142,6 @@ The current parameters of a service instance can be retrieved via cli:
 TODO 
 
 ??Backup
-
-TODO FUTURE FEATURE
 
 Before creating a backup, a backup client must be set up, which can be done by sending [settings](#settings) while creating/updating a service instance.
 Afterwards a snapshot can be triggered via the Elasticsearch API:
@@ -206,7 +185,7 @@ or
 ```
 cf update-service SERVICE_INSTANCE [-c PARAMETERS_AS_JSON]
 ```
-> **_IMPORTANT:_** Keep in mind that **previous values will be overwritten**. In order to see the existing parameters you can use a dashboard or acquire the parameters via cli (see [Acquiring Service Instance Parameters](#acquiring-service-instance-parameters)).
+> **_IMPORTANT:_** Keep in mind that **previous values will be overwritten** when updating. In order to see the existing parameters you can use a dashboard or acquire the parameters via cli (see [Acquiring Service Instance Parameters](#acquiring-service-instance-parameters)).
 - **BROKERNAME** will be the name of the service broker which is likely going to be **osb-rabbitmq**
 - **PLAN** is the plan that is going to be used for the service instance
 - **SERVICENAME** is the name of the service which is up to the user
@@ -214,36 +193,34 @@ cf update-service SERVICE_INSTANCE [-c PARAMETERS_AS_JSON]
 
 For example, a cli command for creating a service instance could look like this:
 ```
-cf cs osb-elasticsearch s elasticsearch-test -c '{"elasticsearch":{"backup":{"s3":{"clients": [{"name":"clientname", "access_key":"XXXXXX", "secret_key":"XXXXXX}]}}}}'
+cf cs osb-elasticsearch s elasticsearch-test -c '{"rabbitmq": {"disk_free_limit": 25000000, "plugins": ["rabbitmq_management", "rabbitmq_delayed_message_exchange"], "ssl": {"enabled": true}}}'
 ```
 An extended example of the parameters for a create/update request for a service instance is shown below:
 ```json
 {
-    "elasticsearch": {
-        "ssl": {
-            "certificate_authorities": "example?"
-        },
-        "backup": {
-          "s3": {
-            "clients": [
-              {
-                "name": "first-client",
-                "access_key": "XXXXXX",
-                "secret_key": "XXXXXX",
-                "endpoint": "https://example.com",
-                "read_timeout": "5s",
-                "max_retries": 3,
-                "use_throttle_retries": true
-              },
-              {
-                "name": "amazon",
-                "access_key": "XXXXXX",
-                "secret_key": "XXXXXX"
-              }
-            ]
-          }
-        }
+  "rabbitmq": {
+    "server": {
+      "reverse_dns_lookup": false,
+      "disk_alarm_threshold": "{mem_relative,0.4}",
+      "disk_free_limit": 50000000,
+      "plugins": ["rabbitmq_management", "rabbitmq_delayed_message_exchange"],
+      "handshake_timeout": 	10000,
+      "net_ticktime": 130,
+      "num_ssl_acceptors": 10,
+      "frame_max": 131072,
+      "channel_max": 2047,
+      "cluster_partition_handling": "autoheal",
+      "num_tcp_acceptors": 10,
+      "fd_limit": 65536,
+      "vm_memory_high_watermark": 0.4,
+      "ssl": {
+        "fail_if_no_peer_cert": false,
+        "handshake_timeout": 5000,
+        "verify": "verify_none",
+        "enabled": true
+      }
     }
+  }
 }
 ```
 
@@ -253,27 +230,29 @@ In the following section, the fields will be described.
 
 The following settings are defined in the schema in service_plan.schemas.service_instance.**create**.parameters.properties.rabbitmq.properties and service_plan.schemas.service_instance.**update**.parameters.properties.rabbitmq.properties (?überprüfen ob korrekt)
 
+> **_IMPORTANT:_** If SSL has been enabled via settings, it must not be disabled, while the service instance ist running.?
+
 | Parameter | Type | Default Value | Description |
 | - | - | - | - |
-| server | | | |
+| server | [Server](#server-object) object| - | Contains all settings for the RabbitMQ service instance. |
 
 
 #### Server object
 
-The SSL object contains the trusted certificate authorities and consists of the following properties:
+The Server object contains the settings for the RabbitMQ service instance and consists of the following properties:
 
 | Parameter | Type | Default Value | Description |
 | - | - | - | - |
 | reverse_dns_lookup | boolean | false | Perform reverse DNS lookups when accepting a connection. RabbitMQctl will then display hostnames instead of IP addresses. |
-| disk_alarm_threshold | string | {mem_relative,0.4} | The threshold in bytes of free disk space at which rabbitmq will raise an alarm. "mem_relative" is relative to the RAM in the machine. Otherwise "absolute" can be used with optional units (e.g. "KB", "MB", "GB") behind an integer number. |
-| disk_free_limit | integer | 50000000 | Lower bound for the disk after which a disk alarm will be set |
-| plugins | array of strings | - | Plugins to be used by RabbitMQ. Valid values are "rabbitmq_management", "rabbitmq_mqtt", "rabbitmq_stomp", "rabbitmq_auth_mechanism_ssl", "rabbitmq_delayed_message_exchange". **"rabbitmq_management"** and **"rabbitmq_delayed_message_exchange"** are **required** |
+| disk_alarm_threshold | string | {mem_relative,0.4} | The threshold in bytes of free disk space at which rabbitmq will raise an alarm. "{mem_relative}" is relative to the RAM in the machine. Otherwise "absolute" can be used with optional units (e.g. "KB", "MB", "GB") behind an integer number. |
+| disk_free_limit | integer | 50000000 | Lower bound for the disk after which a disk alarm will be set. |
+| plugins | array of strings | - | Plugins to be used by RabbitMQ. Valid values are "rabbitmq_management", "rabbitmq_mqtt", "rabbitmq_stomp", "rabbitmq_auth_mechanism_ssl", "rabbitmq_delayed_message_exchange". **"rabbitmq_management"** and **"rabbitmq_delayed_message_exchange"** are **required**. |
 | handshake_timeout | integer | 10000 | Maximum amount of time allowed for the AMQP 0-9-1 and AMQP 1.0 handshake. |
-| ssl | [SSL](#ssl-object) object | - | The SSL object contains the configuration for SSL |
+| ssl | [SSL](#ssl-object) object | - | The SSL object contains the configuration for SSL. |
 | net_ticktime | integer | 130 | Time until a node is considered lost if no heartbeat is sent. |
 | num_ssl_acceptors | integer | 10 | Number of Erlang processes that will accept connections for the TLS. |
 | frame_max | integer | 131072 | Set the max permissible size of an AMQP frame (in bytes). |
-| channel_max | integer | integer | 2047 | Max permissible number of channels per connection. |
+| channel_max | integer | 2047 | Max permissible number of channels per connection. |
 | cluster_partition_handling | string | - | Cluster partition recovery mode. Valid values are "pause_minority" and "autoheal". |
 | num_tcp_acceptors | integer | 10 | Number of Erlang processes that will accept connections for the TCP. |
 | fd_limit | integer | 65536 | The file descriptor limit for the RabbitMQ process. |
@@ -285,11 +264,12 @@ The SSL object contains the trusted certificate authorities and consists of the 
 | - | - | - | - |
 | fail_if_no_peer_cert | boolean | - | Sets, whether RabbitMQ server should reject connection if there is no peer cert. |
 | handshake_timeout | integer | 5000 | TLS handshake timeout, in milliseconds. |
-| verify | string | verify_none | SSL Peer Verification (use 'verify_peer' or 'verifiy_none' to unable/disable) |
-| enabled | boolean | false | Enable SSL/TLS |
+| verify | string | verify_none | SSL Peer Verification (use 'verify_peer' or 'verifiy_none' to unable/disable). |
+| enabled | boolean | false | Enable SSL/TLS. |
 
 ### Ingress and egress binding
 
+?WEG
 When you create a new service binding in cloudfoundry, you can provide an client mode, either ingress or egress. The broker automatically filters the nodes and returns only the IPs corresponding to the client mode passed. If you do not specify a client mode, egress will be used.
 
 Example:
@@ -298,29 +278,19 @@ Example:
 
 `cf bind-service APP_NAME SERVICE_INSTANCE -c '{"clientMode":"egress"}'`
 
-### Built-In user credentials
-
-An Elasticsearch installation includes a small number of built-in users for example to have access to Kibana. In order to obtain these special access data, a new binding must be created and the corresponding client mode must be specified.
-
-To obtain **Admin** credentials use `cf bind-service APP_NAME SERVICE_INSTANCE -c '{"clientMode":"superuser"}'`
-
-To obtain **Kibana** credentials use `cf bind-service APP_NAME SERVICE_INSTANCE -c '{"clientMode":"kibana"}'`
-
-To obtain **Logstash** credentials use `cf bind-service APP_NAME SERVICE_INSTANCE -c '{"clientMode":"logstash"}'`
-
 ## TODO FAQ
 
-### How a can view the status of the cluster?
+### How a can the status of the cluster be viewed?
 Generelle Cluster Infos um Rückschlüsse ziehen zu können
 ### Cluster performance
 
 ### etc
 
-### OSB-Elasticsearch crashed
+### OSB-RabbitMQ crashed
 
 If the service broker crashes, the operator should be contacted.
 
-### A Elasticsearch instance crashed (?anwendbar auf elasticsearch?)
+### A Elasticsearch instance crashed (?anwendbar auf rabbitmq?)
 
 As long as the majority of MongoDB instances is running after another instance failed, the database is still functional. The Bosh director will detect the failure and try to repair the broken instance. If an automatic repair of the instance is not possible, it has to be fixed manually.
 
