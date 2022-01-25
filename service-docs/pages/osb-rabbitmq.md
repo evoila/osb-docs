@@ -25,6 +25,7 @@
     - [A Elasticsearch instance crashed (?anwendbar auf rabbitmq?)](#a-elasticsearch-instance-crashed-anwendbar-auf-rabbitmq)
     - [The size of the backup was bigger than expected (and failed) and now all of my storage space is occupied](#the-size-of-the-backup-was-bigger-than-expected-and-failed-and-now-all-of-my-storage-space-is-occupied)
   - [Appendix](#appendix)
+    - [List of supported plugins](#list-of-supported-plugins)
 
 ---
 
@@ -246,7 +247,7 @@ The Server object contains the settings for the RabbitMQ service instance and co
 | reverse_dns_lookup | boolean | false | Perform reverse DNS lookups when accepting a connection. RabbitMQctl will then display hostnames instead of IP addresses. |
 | disk_alarm_threshold | string | {mem_relative,0.4} | The threshold in bytes of free disk space at which rabbitmq will raise an alarm. "{mem_relative}" is relative to the RAM in the machine. Otherwise "absolute" can be used with optional units (e.g. "KB", "MB", "GB") behind an integer number. |
 | disk_free_limit | integer | 50000000 | Lower bound for the disk after which a disk alarm will be set. |
-| plugins | array of strings | - | Plugins to be used by RabbitMQ. Valid values are "rabbitmq_management", "rabbitmq_mqtt", "rabbitmq_stomp", "rabbitmq_auth_mechanism_ssl", "rabbitmq_delayed_message_exchange". **"rabbitmq_management"** and **"rabbitmq_delayed_message_exchange"** are **required**. |
+| plugins | array of strings | - | Plugins to be used by RabbitMQ. Valid values are listed in [Plugins](#list-of-supported-plugins). **"rabbitmq_management"** and **"rabbitmq_delayed_message_exchange"** are **required**. |
 | handshake_timeout | integer | 10000 | Maximum amount of time allowed for the AMQP 0-9-1 and AMQP 1.0 handshake. |
 | ssl | [SSL](#ssl-object) object | - | The SSL object contains the configuration for SSL. |
 | net_ticktime | integer | 130 | Time until a node is considered lost if no heartbeat is sent. |
@@ -336,4 +337,76 @@ In this case, contact the operator.
 
 ## Appendix
 
-(?nur schema? schema hier? kompletter catalog in assets? -> weitere anpassungen im catalog außer persisten disk und vm type?)
+### List of supported plugins
+
+- accept
+- amqp10_client
+- amqp10_common
+- amqp_client
+- aten
+- base64url
+- cowboy
+- cowlib
+- credentials_obfuscation
+- cuttlefish
+- eetcd
+- enough
+- gen_batch_server
+- getopt
+- gun
+- jose
+- jsx
+- observer_cli
+- osiris
+- prometheus
+- quantile_estimator
+- ra
+- rabbit
+- rabbit_common
+- rabbitmq_amqp1_0
+- rabbitmq_auth_backend_cache
+- rabbitmq_auth_backend_http
+- rabbitmq_auth_backend_ldap
+- rabbitmq_auth_backend_oauth2
+- rabbitmq_auth_mechanism_ssl
+- rabbitmq_aws
+- rabbitmq_consistent_hash_exchange
+- rabbitmq_delayed_message_exchange
+- rabbitmq_event_exchange
+- rabbitmq_federation
+- rabbitmq_federation_management
+- rabbitmq_jms_topic_exchange
+- rabbitmq_management
+- rabbitmq_management_agent
+- rabbitmq_mqtt
+- rabbitmq_peer_discovery_aws
+- rabbitmq_peer_discovery_common
+- rabbitmq_peer_discovery_consul
+- rabbitmq_peer_discovery_etcd
+- rabbitmq_peer_discovery_k8s
+- rabbitmq_prelaunch
+- rabbitmq_prometheus
+- rabbitmq_random_exchange
+- rabbitmq_recent_history_exchange
+- rabbitmq_sharding
+- rabbitmq_shovel
+- rabbitmq_shovel_management
+- rabbitmq_stomp
+- rabbitmq_stream
+- rabbitmq_stream_common
+- rabbitmq_stream_management
+- rabbitmq_top
+- rabbitmq_tracing
+- rabbitmq_trust_store
+- rabbitmq_web_dispatch
+- rabbitmq_web_mqtt
+- rabbitmq_web_mqtt_examples
+- rabbitmq_web_stomp
+- rabbitmq_web_stomp_examples
+- ranch
+- recon
+- seshat
+- stdout_formatter
+- syslog
+- sysmon_handler
+- systemd
