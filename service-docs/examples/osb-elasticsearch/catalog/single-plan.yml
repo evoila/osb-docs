@@ -29,8 +29,6 @@
         persistent_disk_type: 500GB
         properties:
           elasticsearch:
-            jvm_options:
-              - "-Dlog4j.formatMsgNoLookups=true" #workaround for log4shell CVE-2021-44228
             discovery:
               minimum_master_nodes: 2
             plugins:
