@@ -4,14 +4,14 @@
     - [Key Features](#key-features)
     - [Software used by OSB-Kafka](#software-used-by-osb-kafka)
     - [Cluster TODO (nutzen wir Redis Cluster für Monitoring?)](#cluster-todo-nutzen-wir-redis-cluster-für-monitoring)
+      - [Terminology:](#terminology)
   - [Requirements](#requirements)
   - [How to](#how-to)
     - [Create a Service Instance](#create-a-service-instance)
     - [Update a Service Instance](#update-a-service-instance)
     - [Create a Service Binding](#create-a-service-binding)
     - [Acquiring Service Instance Parameters](#acquiring-service-instance-parameters)
-    - [Backup TODO](#backup-todo)
-    - [Change SSL Certificates TODO](#change-ssl-certificates-todo)
+    - [Change SSL Certificates](#change-ssl-certificates)
   - [Settings TODO](#settings-todo)
     - [Service Instance Settings Schema TODO](#service-instance-settings-schema-todo)
       - [logging object](#logging-object)
@@ -60,15 +60,26 @@ The OSB-Kafka offers different service plans which vary in allocated memory, cpu
 
 ### Cluster TODO (nutzen wir Redis Cluster für Monitoring?)
 
-Using PostgreSQL, it is possible to transfer [Write-Ahead Logging (WAL)](https://www.postgresql.org/docs/current/wal-intro.html)
-synchronously or asynchronously to standby-nodes via [Streaming Replication (SR)](https://www.postgresql.org/docs/current/warm-standby.html#STREAMING-REPLICATION). <br>
-Additionally, the Software "Patroni" is used with a HAProxy inside the OSB, so that an automatic switch to another node occurs
-in case of a failure of the primary-node. Inside PostgreSQL, there is no load-balancing provided.
+#### Terminology:
 
-The following image shows how PostgreSQL nodes are managed:
-![Postgres-Cluster](assets/osb-postgres.png)
+- Broker: Brokers form the storage layer of a Kafka cluster. Partitions of topics are spread on different brokers.
+- Topic: Topics durably store events/messages. Producers/Consumers access only the topic specified. E.g. if a consumer subscribes to the topic "monitoring" it will only consume the events/messages stored in "monitoring". After consumption, events are not deleted from the topic. Replication is performed at the level of topic-partitions.
+- Partition: Events of a topic are spread over a number of paritions which are located on different Kafka brokers. E.g. if there are 10 partitions for a topic and 2 brokers, each broker stores 5 partitions. If replication is performed, each partition is replicated and (if possible) the partition replicas are stored in different brokers than their masters.
 
-An HAProxy conists of at least 2 PostgeSQL nodes that are connected via Streaming Replication. Patroni exists on every PostgreSQL node for automatic failover. A central IP or DNS entry is returned by HAProxy. The health check is done by Patroni: In case of failure the primary node will be switched automatically and HAProxy will be set to this one. In order for Patroni to manage the clusters, a central Zookeeper cluster with 3 or 5 instances will be used for all PostgreSQL clusters.
+The access to the master partitions is spread evenly among multiple consumers in a consumer group but it is also possible to access the same partition if a key is used. In case of a failure of a broker, the partition replicas stored in other brokers will be elected as partition masters so that the cluster will still work as intended.
+
+Zookeper is used for monitoring the health of the brokers, configuration of topics, keeping track of the locations of partitions (masters and replicas) and electing a partition replica as new master.
+
+The following image shows, how a Kafka Cluster is managed:
+![Kafka-Cluster](../assets/kafka-cluster.png)
+
+For the sake of simplicity, only topic 1 and 2 are looked at. Each topic consists of 3 partitions with 1 replication each (6 partitions per topic in total). Since the partitions of topic 1 (grey, "M"=master, "R"=replica) are spread across 2 brokers (broker A and broker B), each one stores 3 partitions. The partitions of topic 2 (light blue) are spread among 3 brokers, therefore each one stores 2 partitions. Master and replica partitions are distributed as evenly as possible. The consumer group G1 consists of 4 consumers. In case of no further configuration, each consumer of the group reads from a different partition, which means that the fourth consumer does not access any partition.
+
+?so korrekt?
+?patrick nochmal fragen wegen anzahl der topics per broker (einfach ne einstellung oder warum ist die verteilung so, wie sie ist?)
+?warum hatten manche topics roten rand?
+
+Further information about Kafka Clusters can be found [here](https://kafka.apache.org/documentation/).
 
 ## Requirements
 - [Cloud Foundry CLI](https://docs.cloudfoundry.org/cf-cli/install-go-cli.html)
@@ -136,27 +147,14 @@ The current parameters (and therefore settings) can be retrieved via cli:
 - **SERVICE_INSTANCE** is be the name of the previously created service instance.
 - **SERVICE_INSTANCE_ID** is the guid of the service instance which is acquired in step 1. 
 
-
-### Backup TODO
-
-Wahrscheinlich kein redis backup? Was ist dann mit rdbchecksum und rdbcompression? Oder nur genutzt für diskless replication?
-
-When creating an instance, the disk-space should be calculated. It is important to keep in mind that there is enough space for files, backup and WAL (Write Ahead Log) segments. The backup size can vary, depending on data type and indices:
-
-- If there are many big files of type TEXT / JSONB / JSON / BYTEA, the backup size can be 1.5 times bigger than the database itself.
-- If there are many indices the backup size can shrink to 0.25 the current size.
-- The size of a plan can be scaled up afterwards but this will copy the disk. In order to avoid subsequent changes a fitting plan should be chosen according to the following rule: `Files * ( 1 + Backup Factor ) + max_wal_size `. Thereby the required space can go up to 2.5 times the size plus ~10GB WAL-files.
-
-Setting up a backup can be done the dashboard-url of the service instance (which can be retrieved by the cli command **cf service SERVICE_INSTANCE**). For more information, see the Backup Docs.
-
-### Change SSL Certificates TODO
-
-Wahrscheinlich nicht in redis vorhanden?
+### Change SSL Certificates
 
 The certificates expire after 365 day. If a certificate is about to expire, contact the operator of the Service Broker to renew the certificates.
 
 If Bosh DNS is used, the certificates are stored in Credhub and can be renewed there. If the root CA is still valid, the certificate can simply be deleted and the new certificate can be used via `bosh manifest`and `bosh deploy`. If the root CA expires, it is necessary to concatenate old and new certificates, for example via [https://github.com/pivotal/credhub-release/blob/main/docs/ca-rotation.md](https://github.com/pivotal/credhub-release/blob/main/docs/ca-rotation.md).</br>
 If the IP variant is used and the root CA still valid, it is sufficient to use `bosh recreate`. For changing the root CA, it also has to be concatenated and multiple deploys have to be made.
+
+> **_IMPORTANT:_** Only the SSL certificates of the Kafka instances (not Zookeeper? oder lieber raus lassen?) have to be renewed.
 
 ## Settings TODO
 This section covers different settings that can be made for the OSB-Redis, their default values and how they can be changed.
@@ -183,18 +181,56 @@ cf cs osb-kafka s kafka-test -c '{"redis":{"config":{"tcp_keepalive":70}, "store
 An extended example of the parameters for a create/update request for a service instance is shown below:
 ```json
 {
-    "redis": {
+    "kafka": {
+      "logging": {
+        "log_level": "WARN",
+        "max_file_size": "1GB",
+        "max_backup_index": 10
+      },
       "config": {
-        "tcp_keepalive": 42,
-        "timeout": 65
+        "delete_topic": 0,
+        "log_retention_check_interval_ms": 250000,
+        "log_retention_hours": 140,
+        "log_segment_bytes": 1073741824,
+        "max_poll_intervall": 6000,
+        "num_io_threads": 10,
+        "num_network_threads": 4,
+        "num_partitions": 2,
+        "num_recovery_threads_per_data_dir": 1,
+        "offsets_topic_replication_factor": 3,
+        "socket_receive_buffer_bytes": 102400,
+        "socket_request_max_bytes": 104857600,
+        "socket_send_buffer_bytes": 102400
       },
-      "limits": {
-        "fd": 65000
+      "security": {
+        "setup_secure_client_connection": 0
       },
-      "store": {
-        "rdbchecksum": "yes",
-        "rdbcompression": "no",
-        "stop_writes_on_bgsave_error": "yes"
+      "users": [
+        {
+          "username": "test",
+          "password": "test"
+        }
+      ]
+    },
+    "zookeeper": {
+      "config": {
+        "autopurge_purge_interval": 20,
+        "autopurge_snap_retain_count": 4,
+        "cnx_timeout": 5,
+        "election_algorim": 3,
+        "force_sync": "yes",
+        "global_outstanding_limit": 900,
+        "init_limit": 6,
+        "leader_serves": "yes",
+        "max_client_connections": 70,
+        "max_session_timeout": 40000,
+        "min_session_timeout": 5000,
+        "pre_allocation_size": 65536,
+        "snap_count": 100000,
+        "sync_enabled": true,
+        "sync_limit": 2,
+        "tick_time": 2000,
+        "warning_threshold_limit": 1000
       }
     }
 }
@@ -202,11 +238,11 @@ An extended example of the parameters for a create/update request for a service 
 
 ### Service Instance Settings Schema TODO
 
-The following settings are defined in the schema in TODO(create hat noch kein schema) service_plan.schemas.service_instance.**create**.parameters.properties.redis.properties and service_plan.schemas.service_instance.**update**.parameters.properties.redis.properties (?überprüfen ob korrekt)
+The following settings are defined in the schema in service_plan.schemas.service_instance.**create**.parameters.properties.kafka.properties and service_plan.schemas.service_instance.**update**.parameters.properties.kafka.properties. (warum bei kafka kafka.properties und bei binding binding.PARAMETERS.properties? wegen dem level, auf dem die settings sind?)
 
 | Parameter | Type | Default Value | Description |
 | - | - | - | - |
-| logging | [logging object](#logging-object) | - | Contains properties for the log rotation?. |
+| logging | [logging object](#logging-object) | - | Contains properties for the logging. (richtige beschreibung?) |
 | config | [config object](#config-object) | - | Contains general settings. |
 | security | [security object](#security-object) | -  | Contains security settings. |
 | user | array of [users objects](#users-object) | - | Contains the users for Kafka. |
@@ -215,15 +251,15 @@ The following settings are defined in the schema in TODO(create hat noch kein sc
 
 | Parameter | Type | Default Value | Description |
 | - | - | - | - |
-| log_level | string | "INFO" | Sets the level of kafka logs. Valid values are "ALL", "DEBUG", "INFO", "WARN", "ERROR", "FATAL", "OFF" and "TRACE" (warum kein enum im schema?). If a logging object is given, this property is **required**. |
-| max_file_size | string | "10MB" | Sets the maximum Log4j file size (KB, MB, GB). If a logging object is given, this property is **required**. |
+| log_level | string | "INFO" | Sets the level of kafka logs. Valid values are "ALL", "DEBUG", "INFO", "WARN", "ERROR", "FATAL", "OFF" and "TRACE" (enum in schema?JA -> sollte erledigt sein). If a logging object is given, this property is **required**. |
+| max_file_size | string | "10MB" | Sets the maximum Log4j file size (KB, MB, GB). If a logging object is given, this property is **required**. (regex in schema? JA: "\b([1-9][0-9]*)[K|M|G][B]\b")|
 | max_backup_index | number | 9 | Maximum number of Log4j backup log files. If a logging object is given, this property is **required**. |
 
 #### config object
 
 | Parameter | Type | Default Value | Description |
 | - | - | - | - |
-| delete_topic | boolean | 0 | Sets, whether topics should be deleted (genug infos? deleted WANN?). If a config object is given, this property is **required**. |
+| delete_topic | boolean | 0 | Sets, whether autamically generated topics should be deleted if empty (check?). If a config object is given, this property is **required**. |
 | log_retention_check_interval_ms | number | 300000 | The log retention check interval. If a config object is given, this property is **required**. |
 | log_retention_hours | number | 168 | Duration of the log retention in hours. If a config object is given, this property is **required**. |
 | log_segment_bytes | number | 1073741824 | The size of log segments in bytes. If a config object is given, this property is **required**. |
@@ -258,10 +294,10 @@ The following settings are defined in the schema in TODO(create hat noch kein sc
 | autopurge_snap_retain_count | number | 3 | Autopurge snap(shot?) retain count. If a Zookeper object is given, this property is **required**. |
 | cnx_timeout | number | 5(stunden?) | CNX timeout. If a Zookeper object is given, this property is **required**. |
 | election_algorim | number | 3 | Election algorithm (to avoid confusion: there is a typo in the property name)(wofür steht welche nummer?). If a Zookeper object is given, this property is **required**. |
-| force_sync | string | "yes" | Force synchronization. Valid values are "yes" and "no" (warum kein enum im schema?). If a Zookeper object is given, this property is **required**. |
+| force_sync | string | "yes" | Force synchronization. Valid values are "yes" and "no" (warum kein enum im schema? hinzgefügt). If a Zookeper object is given, this property is **required**. |
 | global_outstanding_limit | number | 1000 | Global outstanding limit (weiß der nutzer was damit gemeint ist? ich nicht). If a Zookeper object is given, this property is **required**. |
 | init_limit | number | 5 | Connection retries. If a Zookeper object is given, this property is **required**. |
-| leader_serves | string | "yes" | Client connections to leader. Valid values are "yes" and "no". If a Zookeper object is given, this property is **required**. |
+| leader_serves | string | "yes" | Client connections to leader. Valid values are "yes" and "no" (?enum ergänzt). If a Zookeper object is given, this property is **required**. |
 | max_client_connections | number | 60 | Maximum number of client connections. If a Zookeper object is given, this property is **required**. |
 | max_session_timeout | number | 40000 | Maximum session timeout in ms. If a Zookeper object is given, this property is **required**. |
 | min_session_timeout | number | 4000 | Minimum session timeout in ms. If a Zookeper object is given, this property is **required**. |
@@ -273,6 +309,39 @@ The following settings are defined in the schema in TODO(create hat noch kein sc
 | warning_threshold_ms | number | 1000 | Warning threshold in ms. If a Zookeper object is given, this property is **required**.  | 
 
 ### Service Binding Settings Schema
+
+The following settings are defined in the schema in service_plan.schemas.service_binding.**create**.parameters.properties
+An extended example of the parameters for a create request for a service binding is shown below:
+```json
+{
+  "service_key_name": "servicekey",
+  "topic_acls": [
+    {
+      "topic": "mytopic",
+      "rights": [
+        "Read",
+        "Write"
+      ]
+    }
+  ],
+  "group_acls": [
+    {
+      "group": "mygroup",
+      "rights": [
+        "All"
+      ]
+    }
+  ],
+  "cluster_acls": [
+    {
+      "rights": [
+        "ClusterAction",
+        "Describe"
+      ]
+    }
+  ]
+}
+```
 
 | Parameter | Type | Default Value | Description |
 | - | - | - | - |
@@ -344,184 +413,219 @@ schemas: &schemas
           create:
             parameters:
               properties:
-                database:
-                  description: Specify the database for the service binding.
+                service_key_name:
+                  title: Service Key name
                   type: string
+                topic_acls:
+                  type: array 
+                  items:
+                  - properties:
+                      topic:
+                        type: string
+                        default: '*'
+                      rights:
+                        type: array
+                        uniqueItems: true
+                        items: 
+                        - type: string
+                          enums:
+                          - All
+                          - Alter
+                          - AlterConfigs
+                          - Create
+                          - Delete
+                          - Describe
+                          - DescribeConfigs
+                          - Read
+                          - Write
+                    type: object
+                    required:
+                    - topic
+                    - rights
+                group_acls:
+                  type: array
+                  items:
+                  - properties:
+                      group:
+                        type: string
+                        default: '*'
+                      rights:
+                        type: array
+                        uniqueItems: true
+                        items: 
+                        - type: string
+                          enums:
+                          - All
+                          - Delete
+                          - Describe
+                          - Read
+                        default: 'All'
+                    type: object
+                    required:
+                    - group
+                    - rights
+                cluster_acls:
+                  type: array
+                  maxItems: 1
+                  items:
+                  - properties:
+                      rights:
+                        type: array
+                        uniqueItems: true
+                        items: 
+                        - type: string
+                          enums:
+                          - All
+                          - Alter
+                          - AlterConfigs
+                          - ClusterAction
+                          - Create
+                          - Describe
+                          - DescribeConfigs
+                          - IdempotentWrite
+                        default: 'All'
+                    type: object
+                    required:
+                    - rights
+              required:
+              - service_key_name
               schema: http://json-schema.org/draft-04/schema#
               type: object
+              title: Service Key Parameters
         service_instance:
-          update: &schemaproperties
+          create: &createUpdate
             parameters:
               properties:
-                postgres:
+                kafka:
                   properties:
-                    version:
-                      type: string
-                      default: "14"
-                    ssl:
-                      type: object
+                    logging:
                       properties:
-                        enabled:
-                          title: ssl enabled
-                          type: boolean
-                          default: true
-                        min_protocol_version:
-                          title: minimal TLS version
-                          type: string
-                          default: "TLSv1.2"
+                        log_level:
+                          default: "INFO"
                           enums:
-                          - TLSv1
-                          - TLSv1.1
-                          - TLSv1.2
-                          - TLSv1.3
-                          - ""
-                        max_protocol_version:
-                          title: minimal TLS version
+                            - ALL
+                            - DEBUG
+                            - INFO
+                            - WARN
+                            - ERROR
+                            - FATAL
+                            - OFF
+                            - TRACE
+                          title: Kafka Log Level (ALL, DEBUG, INFO, WARN, ERROR, FATAL, OFF, TRACE)
                           type: string
-                          default: "TLSv1.3"
-                          enums:
-                          - TLSv1
-                          - TLSv1.1
-                          - TLSv1.2
-                          - TLSv1.3
-                          - ""
-                    database:
+                        max_file_size:
+                          default: "10MB"
+                          title: Maximum Log4j File Size (KB, MB, GB)
+                          type: string
+                        max_backup_index:
+                          default: 9
+                          title: Maximum Log4j Backup Log Files
+                          type: number
+                      required:
+                      - log_level
+                      - max_file_size
+                      - max_backup_index
+                      title: Log Rotation
                       type: object
-                      properties:
-                        extensions:
-                          items:
-                          - type: string
-                            enums: &extension 
-                            - address_standardizer
-                            - address_standardizer_data_us
-                            - adminpack
-                            - amcheck
-                            - autoinc
-                            - bloom
-                            - bool_plperl
-                            - bool_plperlu
-                            - btree_gin
-                            - btree_gist
-                            - citext
-                            - cube
-                            - dblink
-                            - dict_int
-                            - dict_xsyn
-                            - earthdistance
-                            - file_fdw
-                            - fuzzystrmatch
-                            - hstore
-                            - hstore_plperl
-                            - hstore_plperlu
-                            - hstore_plpython2u
-                            - hstore_plpython3u
-                            - hstore_plpythonu
-                            - insert_username
-                            - intagg
-                            - intarray
-                            - isn
-                            - jsonb_plperl
-                            - jsonb_plperlu
-                            - jsonb_plpython2u
-                            - jsonb_plpython3u
-                            - jsonb_plpythonu
-                            - lo
-                            - ltree
-                            - ltree_plpython2u
-                            - ltree_plpython3u
-                            - ltree_plpythonu
-                            - moddatetime
-                            - old_snapshot
-                            - pageinspect
-                            - pg_buffercache
-                            - pgcrypto
-                            - pg_freespacemap
-                            - pg_prewarm
-                            - pgrowlocks
-                            - pg_stat_statements
-                            - pgstattuple
-                            - pg_surgery
-                            - pg_trgm
-                            - pg_visibility
-                            - plperl
-                            - plperlu
-                            - plpgsql
-                            - plpython3u
-                            - postgis
-                            - postgis_raster
-                            - postgis_sfcgal
-                            - postgis_tiger_geocoder
-                            - postgis_topology
-                            - postgres_fdw
-                            - refint
-                            - seg
-                            - sslinfo
-                            - tablefunc
-                            - tcn
-                            - tsm_system_rows
-                            - tsm_system_time
-                            - unaccent
-                            - uuid-ossp
-                            - xml2
-                          type: array
                     config:
                       properties:
-                        authentication_timeout:
-                          title: Authentication Timeout
-                          type: integer
-                          minimum: 1
-                          default: 30
-                        max_locks_per_transaction:
-                          title: Maximum Locks per Transaction
-                          type: integer
-                          minimum: 10
-                          default: 64
-                        max_pred_locks_per_page:
-                          title: Maximum Predicate Locks per Page
-                          type: integer
-                          minimum: 1
-                          default: 2
-                        max_pred_locks_per_relation:
-                          title: Maximum Predicate Locks per Relation
-                          type: integer
-                          default: -2
-                        max_pred_locks_per_transaction:
-                          title: Maximum Predicate Locks per Transaction
-                          type: integer
-                          minimum: 10
-                          default: 64
+                        delete_topic:
+                          default: 0
+                          title: Topic Deletion
+                          type: boolean
+                        log_retention_check_interval_ms:
+                          default: 300000
+                          title: Log Retention Check Interval (ms)
+                          type: number
+                        log_retention_hours:
+                          default: 168
+                          title: Log retention hours
+                          type: number
+                        log_segment_bytes:
+                          default: 1073741824
+                          title: Log segment size (bytes)
+                          type: number
+                        max_poll_interval:
+                          default: 5000
+                          title: Maximum Polling Interval (ms)
+                          type: number
+                        num_io_threads:
+                          default: 8
+                          title: Number of threads doing disk I/O
+                          type: number
+                        num_network_threads:
+                          default: 4
+                          title: Number of Threads handling network requests
+                          type: number
+                        num_partitions:
+                          default: 1
+                          title: Number of log partitions
+                          type: number
+                        num_recovery_threads_per_data_dir:
+                          default: 1
+                          title: Number of recovery threads
+                          type: number
+                        offsets_topic_replication_factor:
+                          default: 3
+                          title: Offsets Topic Replication Factor
+                          type: number
+                        socket_receive_buffer_bytes:
+                          default: 102400
+                          title: Receive Buffer (bytes)
+                          type: number
+                        socket_request_max_bytes:
+                          default: 104857600
+                          title: Maximum request size accepted (bytes)
+                          type: number
+                        socket_send_buffer_bytes:
+                          default: 102400
+                          title: Send Buffer (bytes)
+                          type: number
                       required:
-                      - authentication_timeout
-                      - max_locks_per_transaction
-                      - max_pred_locks_per_transaction
-                      - max_pred_locks_per_relation
-                      - max_pred_locks_per_page
-                      title: General PostgreSQL Settings
+                      - delete_topic
+                      - max_poll_interval
+                      - offsets_topic_replication_factor
+                      - num_network_threads
+                      - num_io_threads
+                      - socket_send_buffer_bytes
+                      - socket_receive_buffer_bytes
+                      - socket_request_max_bytes
+                      - num_partitions
+                      - num_recovery_threads_per_data_dir
+                      - log_retention_hours
+                      - log_retention_check_interval_ms
+                      - log_segment_bytes
+                      title: General Settings
                       type: object
-                    databases:
-                      items:
-                      - properties:
-                          name:
-                            pattern: ^[A-Za-z0-9_-]+$
-                            type: string
-                          users:
-                            items:
-                            - type: string
-                            type: array
-                          extensions:
-                            items:
-                            - type: string
-                              enums: *extension 
-                            type: array
-                        required:
-                        - name
-                        type: object
-                      type: array
+                    security:
+                      properties:
+                        setup_secure_client_connection:
+                          default: 0
+                          title: Secure Client Connection
+                          type: boolean
+                        #acl:
+                        #  properties:
+                        #    enabled:
+                        #      type: boolean
+                        #      default: true
+                        #      title: Acl Enabled
+                        #    without-acl-allow-all:
+                        #      type: boolean
+                        #      default: false
+                        #      title: Allow all when no ACL exist
+                        #  type: object
+                        #  required:
+                        #  - enabled
+                        #  - without-acl-allow-all
+                      required:
+                      - setup_secure_client_connection
+                      #- acl
+                      title: Security Settings
+                      type: object
                     users:
+                      type: array
                       items:
                       - properties:
-                          admin:
-                            type: boolean
                           password:
                             type: string
                           username:
@@ -531,10 +635,109 @@ schemas: &schemas
                         - username
                         - password
                         type: object
-                      type: array
-                  title: ProgreSQL Configuration
+                  title: Kafka Configuration
+                  type: object
+                zookeeper:
+                  properties:
+                    config:
+                      properties:
+                        autopurge_purge_interval:
+                          default: 24
+                          title: Autopurge Interval
+                          type: number
+                        autopurge_snap_retain_count:
+                          default: 3
+                          title: Autopurge Snap Retain Count
+                          type: number
+                        cnx_timeout:
+                          default: 5
+                          title: CNX Timeout
+                          type: number
+                        election_algorim:
+                          default: 3
+                          title: Election Implementation
+                          type: number
+                        force_sync:
+                          default: "yes"
+                          enums:
+                            - yes
+                            - no
+                          title: Force Synchronization (yes/no)
+                          type: string
+                        global_outstanding_limit:
+                          default: 1000
+                          title: Global Outstanding Limit
+                          type: number
+                        init_limit:
+                          default: 5
+                          title: Connection Retries
+                          type: number
+                        leader_serves:
+                          default: "yes"
+                          enums:
+                            - yes
+                            - no
+                          title: Client Connections To Leader (yes/no)
+                          type: string
+                        max_client_connections:
+                          default: 60
+                          title: Maximum Client Connections
+                          type: number
+                        max_session_timeout:
+                          default: 40000
+                          title: Maximum Session Timeout (ms)
+                          type: number
+                        min_session_timeout:
+                          default: 4000
+                          title: Minimum Session Timeout (ms)
+                          type: number
+                        pre_allocation_size:
+                          default: 65536
+                          title: Pre-Allocation Size For Transaction Log Blocks (kb)
+                          type: number
+                        snap_count:
+                          default: 100000
+                          title: Snap Count
+                          type: number
+                        sync_enabled:
+                          default: true
+                          title: Enable Synchronization
+                          type: boolean
+                        sync_limit:
+                          default: 2
+                          title: Synchronization Limit
+                          type: number
+                        tick_time:
+                          default: 2000
+                          title: Single Tick Time
+                          type: number
+                        warning_threshold_ms:
+                          default: 1000
+                          title: Warning Threshold (ms)
+                          type: number
+                      required:
+                      - autopurge_purge_interval
+                      - autopurge_snap_retain_count
+                      - cnx_timeout
+                      - election_algorim
+                      - warning_threshold_ms
+                      - global_outstanding_limit
+                      - init_limit
+                      - leader_serves
+                      - max_client_connections
+                      - max_session_timeout
+                      - min_session_timeout
+                      - pre_allocation_size
+                      - snap_count
+                      - sync_enabled
+                      - sync_limit
+                      - tick_time
+                      - force_sync
+                      title: General Settings
+                      type: object
+                  title: General Zookeeper Settings
                   type: object
               schema: http://json-schema.org/draft-06/schema
               type: object
-          create: *schemaproperties
+          update: *createUpdate
 ```
