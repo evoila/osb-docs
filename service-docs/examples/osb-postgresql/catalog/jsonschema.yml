@@ -166,6 +166,7 @@ schemas: &schemas
                           users:
                             items:
                             - type: string
+                              pattern: '^([A-Za-z0-9_-]+|\(\([A-Za-z0-9._-]+\)\))$'
                             type: array
                           extensions:
                             items:
@@ -184,7 +185,7 @@ schemas: &schemas
                           password:
                             type: string
                           username:
-                            pattern: ^[A-Za-z0-9_-]+$
+                            pattern: '^([A-Za-z0-9_-]+|\(\([A-Za-z0-9._-]+\)\))$'
                             type: string
                         required:
                         - username
