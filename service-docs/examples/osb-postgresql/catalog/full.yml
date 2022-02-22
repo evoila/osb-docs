@@ -1,0 +1,400 @@
+### DONT SAVE CREDENTIALS IN REPOSITORYS. INSTEAD SAVE THEM IN A CREDENTIAL STORE###
+
+
+backup:
+  enabled: true
+bosh:
+  authentication: OAUTH
+  stemcellOs: ubuntu-bionic
+  stemcellVersion: latest
+  vip_network: floating
+service-keys:
+  enabled: true
+catalog:
+  services:
+  - bindable: true
+    bindings_retrievable: true
+    dashboard:
+      auth_endpoint: https://login.<cf-system-url>/oauth
+      url: <broker-url>/custom/v2/authentication
+    dashboard_client:
+      id: <broker-domain> #must be unique, doesn't need to be url
+      secret: change-me #credential - used by uaa, can be chosen freely
+      redirect_uri: <broker-url>/custom/v2/authentication
+    description: PostgreSQL Instances
+    id: B459D6A2-AF75-4C02-8544-C1B976764FFC
+    instances_retrievable: true
+    plan_updateable: true
+    name: osb-postgresql-test
+    metadata:
+      displayName: Postgresql
+      longDescription: Postgresql 
+      providerDisplayName: evoila
+      documentationUrl: https://github.com/evoila/osb-docs
+      supportUrl: https://helpdesk.evoila.io
+      imageUrl: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAQAAAAEACAMAAABrrFhUAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAARFQTFRFv9Tii4yK1dXWqqus9PT1Jicl8fHw7/T4YWJkQH+pgIGDf6nFEF+TqKinMHSiYJS33+rxxcXF39/gQ0RCdnd5lpaYz9/p4uLiUlNQn7/UIGmav8DB1NTTNTYza2xvfX58b3BumpqZoKGiUIqwysrLj7TMYGFf6urqi4yOt7e2r8nbQVZncJ+/tbW3Nzg4DDdREig0UlNWKCknJCUjHB0aLzAwFx0dUVddR0hJICEfIFV5RlZjNlZtG1V8bHd9O1ZqTExKVWt7Ozw8NmqOSktNYmJitMrYxsfHP0BBDy9CkKCsa4CQvr++C1SGFCQsIjM7Xl9dYXaFS1dgTk9SKywrJlV2MjMyVldaAFSMGBkW////aRS63AAAAFt0Uk5T////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////AJz6uLwAAAuISURBVHja7J1ne+PGEYBBEgRJsDexd1KiFOqsiy8Xx47tFDu9N0r4/z8kOhHYAiyArQCdzHw83cPdeTE7MzvYHVje/7lYAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAIhIxVKWHySAzkN9V2s865NarT65+YEA6Ex2OlUnpLE7dK4dQOXQejYqLV0MjACw2s8ZyM66UgBW7TkjmU6uEEB26r8hsK4MQGf3nLHUOtcE4BD1+41au15/sDTIQ71+qk2jCOpXA6AStv7W6aGiPb48nMIBptW5DgAW/finGoN1eKGFgmzj4RoATKg5tQ3n2DdtTctA2zypCbU7nnHp0CPmDaCt0TFLhZxdJVcAbT0LUnj2RFBoVXIE0FZ/EpIxgRw5PwAnPItD1gWNSUPND+gAgP1/I4cC001DKRZomPEN1v/Gy0E6OCl4yANApZGv/q8zQAQanRwA7PLWnyTQyh7AIX/9X1dBQ9oNWNoWQK4FduwJ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'
+    plans:
+    - description: A shared cluster for dev/test and really small apps
+      free: true
+      id: 2FC323491-858C-41F4-803A-2309C3230 #must be uuid
+      metadata:
+        backup:
+          enabled: true
+          instance_group: haproxy
+        connections: 5
+        ingress_instance_group: haproxy
+      name: xs
+      platform: EXISTING_SERVICE
+    - description: A small instance for low requirement apps
+      free: false
+      id: 5903CFC3-95C0-4C62-BE6C-DA87664656F4 #must be uuid
+      metadata:
+        customParameters: #only needed if dns should be used
+          dns: <service-dns> #postfix for dns, added to end of dns
+          cert: /<bosh-name>/osb/postgres/ca #bosh credhub path used as root-ca
+        backup:
+          enabled: true
+          instance_group: postgres
+        ingress_instance_group: postgres
+        instance_group_config:
+        - name: postgres
+          nodes: 1
+          persistent_disk_type: 10GB
+        - name: haproxy
+          nodes: 0
+          persistent_disk_type: 10GB
+        networks:
+        - name: default
+        vm_type: small
+      name: s
+      platform: BOSH
+      schemas: &schemas
+        service_binding:
+          create:
+            parameters:
+              properties:
+                database:
+                  description: Specify the database for the service binding.
+                  type: string
+              schema: http://json-schema.org/draft-04/schema#
+              type: object
+        service_instance:
+          update: &schemaproperties
+            parameters:
+              properties:
+                postgres:
+                  properties:
+                    version:
+                      type: string
+                      default: "14"
+                    ssl:
+                      type: object
+                      properties:
+                        enabled:
+                          title: ssl enabled
+                          type: boolean
+                          default: true
+                        min_protocol_version:
+                          title: minimal TLS version
+                          type: string
+                          default: "TLSv1.2"
+                          enums:
+                          - TLSv1
+                          - TLSv1.1
+                          - TLSv1.2
+                          - TLSv1.3
+                          - ""
+                        max_protocol_version:
+                          title: minimal TLS version
+                          type: string
+                          default: "TLSv1.3"
+                          enums:
+                          - TLSv1
+                          - TLSv1.1
+                          - TLSv1.2
+                          - TLSv1.3
+                          - ""
+                    database:
+                      type: object
+                      properties:
+                        extensions:
+                          items:
+                          - type: string
+                            enums: &extension 
+                            - address_standardizer
+                            - address_standardizer_data_us
+                            - adminpack
+                            - amcheck
+                            - autoinc
+                            - bloom
+                            - bool_plperl
+                            - bool_plperlu
+                            - btree_gin
+                            - btree_gist
+                            - citext
+                            - cube
+                            - dblink
+                            - dict_int
+                            - dict_xsyn
+                            - earthdistance
+                            - file_fdw
+                            - fuzzystrmatch
+                            - hstore
+                            - hstore_plperl
+                            - hstore_plperlu
+                            - hstore_plpython2u
+                            - hstore_plpython3u
+                            - hstore_plpythonu
+                            - insert_username
+                            - intagg
+                            - intarray
+                            - isn
+                            - jsonb_plperl
+                            - jsonb_plperlu
+                            - jsonb_plpython2u
+                            - jsonb_plpython3u
+                            - jsonb_plpythonu
+                            - lo
+                            - ltree
+                            - ltree_plpython2u
+                            - ltree_plpython3u
+                            - ltree_plpythonu
+                            - moddatetime
+                            - old_snapshot
+                            - pageinspect
+                            - pg_buffercache
+                            - pgcrypto
+                            - pg_freespacemap
+                            - pg_prewarm
+                            - pgrowlocks
+                            - pg_stat_statements
+                            - pgstattuple
+                            - pg_surgery
+                            - pg_trgm
+                            - pg_visibility
+                            - plperl
+                            - plperlu
+                            - plpgsql
+                            - plpython3u
+                            - postgis
+                            - postgis_raster
+                            - postgis_sfcgal
+                            - postgis_tiger_geocoder
+                            - postgis_topology
+                            - postgres_fdw
+                            - refint
+                            - seg
+                            - sslinfo
+                            - tablefunc
+                            - tcn
+                            - tsm_system_rows
+                            - tsm_system_time
+                            - unaccent
+                            - uuid-ossp
+                            - xml2
+                          type: array
+                    config:
+                      properties:
+                        authentication_timeout:
+                          title: Authentication Timeout
+                          type: integer
+                          minimum: 1
+                          default: 30
+                        max_locks_per_transaction:
+                          title: Maximum Locks per Transaction
+                          type: integer
+                          minimum: 10
+                          default: 64
+                        max_pred_locks_per_page:
+                          title: Maximum Predicate Locks per Page
+                          type: integer
+                          minimum: 1
+                          default: 2
+                        max_pred_locks_per_relation:
+                          title: Maximum Predicate Locks per Relation
+                          type: integer
+                          default: -2
+                        max_pred_locks_per_transaction:
+                          title: Maximum Predicate Locks per Transaction
+                          type: integer
+                          minimum: 10
+                          default: 64
+                      required:
+                      - authentication_timeout
+                      - max_locks_per_transaction
+                      - max_pred_locks_per_transaction
+                      - max_pred_locks_per_relation
+                      - max_pred_locks_per_page
+                      title: General PostgreSQL Settings
+                      type: object
+                    databases:
+                      items:
+                      - properties:
+                          name:
+                            pattern: ^[A-Za-z0-9_-]+$
+                            type: string
+                          users:
+                            items:
+                            - type: string
+                              pattern: '^([A-Za-z0-9_-]+|\(\([A-Za-z0-9._-]+\)\))$'
+                            type: array
+                          extensions:
+                            items:
+                            - type: string
+                              enums: *extension 
+                            type: array
+                        required:
+                        - name
+                        type: object
+                      type: array
+                    users:
+                      items:
+                      - properties:
+                          admin:
+                            type: boolean
+                          password:
+                            type: string
+                          username:
+                            pattern: '^([A-Za-z0-9_-]+|\(\([A-Za-z0-9._-]+\)\))$'
+                            type: string
+                        required:
+                        - username
+                        - password
+                        type: object
+                      type: array
+                  title: ProgreSQL Configuration
+                  type: object
+              schema: http://json-schema.org/draft-06/schema
+              type: object
+          create: *schemaproperties
+    - description: A good toolbox providing availability and performance over five
+        nodes
+      free: false
+      id: DA183185-701A-41CB-BB0C-9CFC7DD95CB3 #must be uuid
+      metadata:
+        customParameters: #only needed if dns should be used
+          dns: <service-dns> #postfix for dns, added to end of dns
+          cert: /<bosh-name>/osb/postgres/ca #bosh credhub path used as root-ca
+        backup:
+          enabled: true
+          instance_group: postgres
+        ingress_instance_group: haproxy
+        instance_group_config:
+        - name: postgres
+          nodes: 2
+          persistent_disk_type: 10GB
+          vm_type: small
+        - name: haproxy
+          nodes: 1
+          persistent_disk_type: 10GB
+          vm_type: small
+        networks:
+        - name: default
+      name: l
+      platform: BOSH
+      schemas: *schemas
+    - description: A small instance for low requirement apps
+      free: false
+      id: 5903CFE9-95C0-4C62-BE6C-DA87664656F4
+      metadata:
+        backup:
+          enabled: true
+          instance_group: postgres
+        ingress_instance_group: postgres
+        instance_group_config:
+        - name: postgres
+          nodes: 1
+          persistent_disk_type: 10GB
+        - name: haproxy
+          nodes: 0
+          persistent_disk_type: 10GB
+        networks:
+        - name: default
+        vm_type: small
+        properties:
+          postgres:
+            ssl: #needed when set to ip/nodns-mode
+              cakey: ((<bosh-name>/osb/postgres/ca.private_key)) #bosh credhub path or string used as root-ca
+              ca: ((/<bosh-name>/osb/postgres/ca.certificate))((/<bosh-name>/osb/postgres/ca.ca)) #bosh credhub path or string used as root-ca
+      name: s-ip
+      platform: BOSH
+      schemas: *schemas
+    - description: A good toolbox providing availability and performance over five
+        nodes
+      free: false
+      id: DA1833F3-701A-41CB-BB0C-9CFC7DD95CB3
+      metadata:
+        backup:
+          enabled: true
+          instance_group: postgres
+        ingress_instance_group: haproxy
+        instance_group_config:
+        - name: postgres
+          nodes: 2
+          persistent_disk_type: 10GB
+          vm_type: small
+        - name: haproxy
+          nodes: 1
+          persistent_disk_type: 10GB
+          vm_type: small
+        networks:
+        - name: default
+        properties:
+          postgres:
+            ssl: #needed when set to ip/nodns-mode
+              cakey: ((<bosh-name>/osb/postgres/ca.private_key)) #bosh credhub path or string used as root-ca
+              ca: ((/<bosh-name>/osb/postgres/ca.certificate))((/<bosh-name>/osb/postgres/ca.ca)) #bosh credhub path or string used as root-ca
+      name: l-ip
+      platform: BOSH
+      schemas: *schemas
+config:
+  sb:
+    name: osb-postgresql-test
+    uri: <broker-url>
+  site:
+    postfix: ""
+    url: <cf-system-domain>
+endpoints:
+  custom:
+  - identifier: osb-backup-manager
+    url: <backup-manager-url>
+  - identifier: osb-log-metric-backend
+    url: <log-metric-backend-url>
+  - identifier: osb-autoscaler-core
+    url: <autoscaler-core-url>
+  default: <broker-url>
+###can be omitted if no plans need existing endpoints
+###the values of the fields inside existing must match the bosh release
+existing: 
+  endpoint:
+    database: service
+    deployment: osb-postgresql
+    hosts:
+    - backup: true
+      name: haproxy
+      port: 5432
+      ip: <instance-ip/dns-name>
+    - backup: false
+      name: postgres
+      port: 5432
+      ip: <instance-ip/dns-name>
+    - backup: false
+      name: postgres
+      port: 5432
+      ip: <instance-ip/dns-name>
+    username: service #credential
+    password: change-me #credential
+    backup_credentials:
+      username: backup #credential
+      password: change-me #credential
+login:
+  username: username #credential - needed for cf register-broker
+  password: change-me #credential - needed for cf register-broker
+  role: USER #don't change
+spring:
+  profiles: postgresql
+  credhub:
+    keystore-password: change-me #credential - can be chosen freely, used for accessing java keystore
+  thymeleaf:
+    cache: true
+    mode: LEGACYHTML5
