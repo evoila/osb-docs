@@ -351,7 +351,7 @@ The config object contains the settings for locks and consists of the following 
 | Parameter | Type | Default Value | Description |
 | - | - | - | - |
 | name | string | | Name of the database |
-| users | array of string | | List of users that can connect to the database |
+| users | array of string | | List of users that can connect to the database. The value must match the pattern "^([A-Za-z0-9_-]+|\\(\\([A-Za-z0-9._-]+\\)\\))$". |
 | extensions | array of string | | An array of supported extensions* |
 
 \*Valid values can bee found in [Config object (database)](#config-object-database)
@@ -361,7 +361,7 @@ The config object contains the settings for locks and consists of the following 
 | Parameter | Type | Default Value | Description |
 | - | - | - | - |
 | admin | boolean | | Determines, whether the user is an admin |
-| username | string | | Name of the user. MUST be set |
+| username | string | | Name of the user. The value must match the pattern "^([A-Za-z0-9_-]+|\\(\\([A-Za-z0-9._-]+\\)\\))$". MUST be set |
 | password | string | | Password of the user. MUST be set |
 
 ### Service Binding Settings Schema
@@ -594,6 +594,7 @@ schemas: &schemas
                           users:
                             items:
                             - type: string
+                              pattern: '^([A-Za-z0-9_-]+|\(\([A-Za-z0-9._-]+\)\))$'
                             type: array
                           extensions:
                             items:
@@ -612,7 +613,7 @@ schemas: &schemas
                           password:
                             type: string
                           username:
-                            pattern: ^[A-Za-z0-9_-]+$
+                            pattern: '^([A-Za-z0-9_-]+|\(\([A-Za-z0-9._-]+\)\))$'
                             type: string
                         required:
                         - username
