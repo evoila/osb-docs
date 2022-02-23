@@ -3,7 +3,7 @@
   - [Overview TODO](#overview-todo)
     - [Key Features](#key-features)
     - [Software used by OSB-Kafka](#software-used-by-osb-kafka)
-    - [Cluster TODO (nutzen wir Redis Cluster für Monitoring?)](#cluster-todo-nutzen-wir-redis-cluster-für-monitoring)
+    - [Cluster TODO](#cluster-todo)
       - [Terminology:](#terminology)
   - [Requirements](#requirements)
   - [How to](#how-to)
@@ -58,7 +58,7 @@ The OSB-Kafka offers different service plans which vary in allocated memory, cpu
 ### Software used by OSB-Kafka
 - **Kafka**: 2.12?
 
-### Cluster TODO (nutzen wir Redis Cluster für Monitoring?)
+### Cluster TODO
 
 #### Terminology:
 
@@ -154,7 +154,7 @@ If the IP variant is used and the root CA still valid, it is sufficient to use `
 > **_IMPORTANT:_** Only the SSL certificates of the Kafka instances have to be renewed.
 
 ## Settings TODO
-This section covers different settings that can be made for the OSB-Redis, their default values and how they can be changed.
+This section covers different settings that can be made for the OSB-Kafka, their default values and how they can be changed.
 
 Settings can be sent as parameters of a create/update request of a service instance via CLI.
 
