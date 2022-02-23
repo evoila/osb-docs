@@ -24,8 +24,8 @@
       - [group_acls](#group_acls)
       - [cluster_acls object](#cluster_acls-object)
   - [FAQ](#faq)
-    - [OSB-Redis crashed](#osb-redis-crashed)
-    - [A Redis master/replica instance crashed](#a-redis-masterreplica-instance-crashed)
+    - [OSB-Kafka crashed](#osb-kafka-crashed)
+    - [A Kafka master/replica instance crashed](#a-kafka-masterreplica-instance-crashed)
     - [The size of the backup was bigger than expected (and failed) and now all of my storage space is occupied TODO](#the-size-of-the-backup-was-bigger-than-expected-and-failed-and-now-all-of-my-storage-space-is-occupied-todo)
   - [Appendix](#appendix)
     - [JSON-Schema](#json-schema)
@@ -64,7 +64,7 @@ The OSB-Kafka offers different service plans which vary in allocated memory, cpu
 
 - Broker: Brokers form the storage layer of a Kafka cluster. Partitions of topics are spread on different brokers.
 - Topic: Topics durably store events/messages. Producers/Consumers access only the topic specified. E.g. if a consumer subscribes to the topic "monitoring" it will only consume the events/messages stored in "monitoring". After consumption, events are not deleted from the topic. Replication is performed at the level of topic-partitions.
-- Partition: Events of a topic are spread over a number of paritions which are located on different Kafka brokers. E.g. if there are 10 partitions for a topic and 2 brokers, each broker stores 5 partitions. If replication is performed, each partition is replicated and (if possible) the partition replicas are stored in different brokers than their masters.
+- Partition: Events of a topic are spread over a number of paritions which are located on different Kafka brokers. E.g. if there are 10 partitions for a topic and 2 brokers, each broker stores 5 partitions. If replication is performed, each partition is replicated and (if possible) the partition replicas are stored in different brokers than their masters and other replicas of the same partition.
 
 The access to the master partitions is spread evenly among multiple consumers in a consumer group but it is also possible to access the same partition if a key is used. In case of a failure of a broker, the partition replicas stored in other brokers will be elected as partition masters so that the cluster will still work as intended.
 
@@ -75,9 +75,7 @@ The following image shows, how a Kafka Cluster is managed:
 
 For the sake of simplicity, only topic 1 and 2 are looked at. Each topic consists of 3 partitions with 1 replication each (6 partitions per topic in total). Since the partitions of topic 1 (grey, "M"=master, "R"=replica) are spread across 2 brokers (broker A and broker B), each one stores 3 partitions. The partitions of topic 2 (light blue) are spread among 3 brokers, therefore each one stores 2 partitions. Master and replica partitions are distributed as evenly as possible. The consumer group G1 consists of 4 consumers. In case of no further configuration, each consumer of the group reads from a different partition, which means that the fourth consumer does not access any partition.
 
-?so korrekt?
-?patrick nochmal fragen wegen anzahl der topics per broker (einfach ne einstellung oder warum ist die verteilung so, wie sie ist?)
-?warum hatten manche topics roten rand?
+?warum hatten manche topics roten rand? weg
 
 Further information about Kafka Clusters can be found [here](https://kafka.apache.org/documentation/).
 
@@ -99,7 +97,6 @@ cf create-service SERVICE PLAN SERVICE_INSTANCE [-b BROKER] [-c PARAMETERS_AS_JS
 
 For more information see [Cloud Foundry CLI Reference Guide](https://cli.cloudfoundry.org/en-US/v6/create-service.html).
 
-TODO (?Schema für create)
 Aternatively, if there is a dashboard set up (like the Stratos Dashboard for example), it can be used to create a service instance.
 
 ### Update a Service Instance
@@ -154,12 +151,12 @@ The certificates expire after 365 day. If a certificate is about to expire, cont
 If Bosh DNS is used, the certificates are stored in Credhub and can be renewed there. If the root CA is still valid, the certificate can simply be deleted and the new certificate can be used via `bosh manifest`and `bosh deploy`. If the root CA expires, it is necessary to concatenate old and new certificates, for example via [https://github.com/pivotal/credhub-release/blob/main/docs/ca-rotation.md](https://github.com/pivotal/credhub-release/blob/main/docs/ca-rotation.md).</br>
 If the IP variant is used and the root CA still valid, it is sufficient to use `bosh recreate`. For changing the root CA, it also has to be concatenated and multiple deploys have to be made.
 
-> **_IMPORTANT:_** Only the SSL certificates of the Kafka instances (not Zookeeper? oder lieber raus lassen?) have to be renewed.
+> **_IMPORTANT:_** Only the SSL certificates of the Kafka instances have to be renewed.
 
 ## Settings TODO
 This section covers different settings that can be made for the OSB-Redis, their default values and how they can be changed.
 
-Settings can be sent as parameters of a create/update (?schema noch ergänizen für create?) request of a service instance via CLI.
+Settings can be sent as parameters of a create/update request of a service instance via CLI.
 
 TThe CLI command will look like this:
 ```
@@ -176,7 +173,7 @@ cf update-service SERVICE_INSTANCE [-c PARAMETERS_AS_JSON]
 
 For example, a cli command for creating a service instance could look like this:
 ```
-cf cs osb-kafka s kafka-test -c '{"redis":{"config":{"tcp_keepalive":70}, "store":{"rdbcompression":"no"}}}'
+cf cs osb-kafka s kafka-test -c '{"kafka":{"logging": {"log_level": "INFO"}, "config":{"num_partitions": 3}}}'
 ```
 An extended example of the parameters for a create/update request for a service instance is shown below:
 ```json
@@ -238,11 +235,11 @@ An extended example of the parameters for a create/update request for a service 
 
 ### Service Instance Settings Schema TODO
 
-The following settings are defined in the schema in service_plan.schemas.service_instance.**create**.parameters.properties.kafka.properties and service_plan.schemas.service_instance.**update**.parameters.properties.kafka.properties. (warum bei kafka kafka.properties und bei binding binding.PARAMETERS.properties? wegen dem level, auf dem die settings sind?)
+The following settings are defined in the schema in service_plan.schemas.service_instance.**create**.parameters.properties.kafka.properties and service_plan.schemas.service_instance.**update**.parameters.properties.kafka.properties.
 
 | Parameter | Type | Default Value | Description |
 | - | - | - | - |
-| logging | [logging object](#logging-object) | - | Contains properties for the logging. (richtige beschreibung?) |
+| logging | [logging object](#logging-object) | - | Contains properties for the logging. |
 | config | [config object](#config-object) | - | Contains general settings. |
 | security | [security object](#security-object) | -  | Contains security settings. |
 | user | array of [users objects](#users-object) | - | Contains the users for Kafka. |
@@ -251,15 +248,15 @@ The following settings are defined in the schema in service_plan.schemas.service
 
 | Parameter | Type | Default Value | Description |
 | - | - | - | - |
-| log_level | string | "INFO" | Sets the level of kafka logs. Valid values are "ALL", "DEBUG", "INFO", "WARN", "ERROR", "FATAL", "OFF" and "TRACE" (enum in schema?JA -> sollte erledigt sein). If a logging object is given, this property is **required**. |
-| max_file_size | string | "10MB" | Sets the maximum Log4j file size (KB, MB, GB). If a logging object is given, this property is **required**. (regex in schema? JA: "\b([1-9][0-9]*)[K|M|G][B]\b")|
+| log_level | string | "INFO" | Sets the level of kafka logs. Valid values are "ALL", "DEBUG", "INFO", "WARN", "ERROR", "FATAL", "OFF" and "TRACE". If a logging object is given, this property is **required**. |
+| max_file_size | string | "10MB" | Sets the maximum Log4j file size (KB, MB, GB). The value must match the pattern "^[1-9][0-9]*[KMG]B$". If a logging object is given, this property is **required**.|
 | max_backup_index | number | 9 | Maximum number of Log4j backup log files. If a logging object is given, this property is **required**. |
 
 #### config object
 
 | Parameter | Type | Default Value | Description |
 | - | - | - | - |
-| delete_topic | boolean | 0 | Sets, whether autamically generated topics should be deleted if empty (check?). If a config object is given, this property is **required**. |
+| delete_topic | boolean | 0 | Sets, whether autamically generated topics should be deleted if empty. If a config object is given, this property is **required**. |
 | log_retention_check_interval_ms | number | 300000 | The log retention check interval. If a config object is given, this property is **required**. |
 | log_retention_hours | number | 168 | Duration of the log retention in hours. If a config object is given, this property is **required**. |
 | log_segment_bytes | number | 1073741824 | The size of log segments in bytes. If a config object is given, this property is **required**. |
@@ -283,7 +280,7 @@ The following settings are defined in the schema in service_plan.schemas.service
 
 | Parameter | Type | Default Value | Description |
 | - | - | - | - |
-| username | string | - | The username (frei wählbar?). Valid symbols have to be in the pattern ^[A-Za-z0-9_-]+$. If a users object is given, this property is **required**. |
+| username | string | - | The username. The value must match the pattern ^[A-Za-z0-9_-]+$. If a users object is given, this property is **required**. |
 | password | string | - | If a users object is given, this property is **required**. |
 
 ### Service Instance Zookeper Schema
@@ -356,14 +353,14 @@ blabla?
 
 | Parameter | Type | Default Value | Description |
 | - | - | - | - |
-| topic | string | * | ?. If a topic_acls object is given, this parameter is **required**. |
+| topic | string | * | The name of the topic to be created?. ?hier regex? If a topic_acls object is given, this parameter is **required**. |
 | rights | array of string | - | Sets the rights of the topic (?). Valid values are "All", "Alter", "AlterConfigs", "Create", "Delete", "Describe", "DescribeConfigs", "Read" and "Write". If a topic_acls object is given, this parameter is **required**. |
 
 #### group_acls 
 
 | Parameter | Type | Default Value | Description |
 | - | - | - | - |
-| group | string | * | name? of group?. If a group_acls object is given, this parameter is **required**. |
+| group | string | * | Name of a (consumer?producer? egal?) group?. If a group_acls object is given, this parameter is **required**. |
 | rights | array of string | "All" | Sets the rights of the group. Valid values are "All", "Delete", "Describe" and "Read". If a group_acls object is given, this parameter is **required**. |
 
 #### cluster_acls object
@@ -376,13 +373,13 @@ Warum ist cluster_acls als array of objects definiert, wenn "maxItems: 1"? Macht
 
 ## FAQ
 
-### OSB-Redis crashed
+### OSB-Kafka crashed
 
 If the service broker crashes, the operator should be contacted.
 
-### A Redis master/replica instance crashed
+### A Kafka master/replica instance crashed
 
-As long as there is at least one replica instance or the master instance running after another instance failed, Redis is still functional. ?Nutzen wir Redis Sentinel für Healthchecks?
+As long as there is at least one replica partition of a lost master partition or the master partition running after an instance failed, Kafka is still functional.
 
 The following causes can lead to a failure: ?passt das noch?
 - IaaS problems with VMs, network or storage
@@ -390,7 +387,7 @@ The following causes can lead to a failure: ?passt das noch?
 - SSL certificates expired
 - Automatic Failover requires Zookeeper
 
-Access to the VM via [Bosh CLI](https://bosh.io/docs/cli-v2/) is required for debugging. The logs of Redis can be acquired within the VM under:
+Access to the VM via [Bosh CLI](https://bosh.io/docs/cli-v2/) is required for debugging. The logs of Kafka can be acquired within the VM under:
 
 ```
 /var/vcap/sys/log/redis/?ALL?
@@ -516,6 +513,7 @@ schemas: &schemas
                         max_file_size:
                           default: "10MB"
                           title: Maximum Log4j File Size (KB, MB, GB)
+                          pattern: "^[1-9][0-9]*[KMG]B$"
                           type: string
                         max_backup_index:
                           default: 9
