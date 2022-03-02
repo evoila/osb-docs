@@ -1,6 +1,6 @@
 {
 	"info": {
-		"_postman_id": "d93267f9-3158-4542-b796-152b9fd217d4",
+		"_postman_id": "eac2abec-deb7-4026-86ec-daa840f0811a",
 		"name": "Open Service Broker",
 		"description": "This collection holds calls for Open Service Brokers.\n\nThe requests use postman environment variables to run fully functionaly.\nFollowing variables are required to be set manualy:\n\nbasic-user\t\t-> username for basic auth\nbasic-pw\t\t-> password for basic auth\nurl\t\t\t\t-> url to connect against (does not hold protocol!)\nport\t\t\t-> port to connect against\nprotocol\t\t-> protocol to use (http or https)\nservice_id\t\t-> guid of the service definition to use\nplan_id\t\t\t-> guid of the service plan to use\nold_plan_id\t\t-> guid of the previous used plan (used for service instance updates)\nosb-API-Header\t-> value for the X-Broker-API-Version header\n\nYou can often set variables in postman via rightclick on marked text. This is useful when setting service and plan ids.\n\nFollowing variables will be set and used automatically, so be sure to be using a postman environment:\n\nlast_instance_guid\t-> is set when provisioning a service instance\nlast_binding_guid\t-> is set when creating a binding\n",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
@@ -15,7 +15,6 @@
 						{
 							"listen": "prerequest",
 							"script": {
-								"id": "c2b67c93-6092-4af6-8523-5521d64e4ffb",
 								"exec": [
 									"var guid = (function() {",
 									"  function s4() {",
@@ -67,7 +66,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n\t\"service_id\" : \"7542E5CE-D659-4B63-98B8-7D6361BF1EB4\",\n\t\"plan_id\" : \"195DBCB1-8F93-4F29-8BE4-411309DD520C\",\n\t\"app_guid\" : \"sr-development-test-app\"\n}"
+							"raw": "{\n\t\"service_id\" : \"{{service_id}}\",\n\t\"plan_id\" : \"{{plan_id}}\"\n}"
 						},
 						"url": {
 							"raw": "{{protocol}}://{{url}}:{{port}}/v2/service_instances/{{last_instance_guid}}/service_bindings/{{last_binding_guid}}?accepts_incomplete=true",
@@ -270,7 +269,6 @@
 						{
 							"listen": "prerequest",
 							"script": {
-								"id": "17c7067e-14ec-4e91-8296-8c75665583b3",
 								"exec": [
 									"var guid = (function() {",
 									"  function s4() {",
@@ -320,7 +318,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n\t\"service_id\" : \"{{service_id}}\",\n\t\"plan_id\" : \"{{plan_id}}\",\n\t\"organization_guid\" : \"org\",\n\t\"space_guid\" : \"space\",\n\t\"context\" : {},\n\t\"parameters\" : {}\n}"
+							"raw": "{\n\t\"service_id\" : \"{{service_id}}\",\n\t\"plan_id\" : \"{{plan_id}}\",\n\t\"organization_guid\" : \"org\",\n\t\"space_guid\" : \"space\",\n\t\"context\" : {\n        \"platform\": \"cloudfoundry\",\n        \"organization_guid\": \"{{oeganizaition_guid}}\", \n        \"organization_name\": \"{{organization_name}}\", \n        \"space_guid\": \"{{space_guid}}\", \n        \"space_name\":\"{{space_name}}\",\n        \"instance_name\": \"{{instance_name}}\"\n    },\n\t\"parameters\" : {}\n}"
 						},
 						"url": {
 							"raw": "{{protocol}}://{{url}}:{{port}}/v2/service_instances/{{last_instance_guid}}?accepts_incomplete=true",
@@ -529,7 +527,6 @@
 						{
 							"listen": "prerequest",
 							"script": {
-								"id": "5ef60b90-3caa-49cb-ae45-d852f0da1803",
 								"exec": [
 									""
 								],
@@ -584,7 +581,6 @@
 						{
 							"listen": "prerequest",
 							"script": {
-								"id": "b77700cc-080d-401e-b2ae-8001b7a2b0ea",
 								"exec": [
 									""
 								],
@@ -653,7 +649,6 @@
 						{
 							"listen": "prerequest",
 							"script": {
-								"id": "b77700cc-080d-401e-b2ae-8001b7a2b0ea",
 								"exec": [
 									""
 								],
@@ -722,7 +717,6 @@
 						{
 							"listen": "prerequest",
 							"script": {
-								"id": "b77700cc-080d-401e-b2ae-8001b7a2b0ea",
 								"exec": [
 									""
 								],
@@ -899,7 +893,6 @@
 						{
 							"listen": "prerequest",
 							"script": {
-								"id": "17c7067e-14ec-4e91-8296-8c75665583b3",
 								"exec": [
 									""
 								],
@@ -1154,7 +1147,6 @@
 						{
 							"listen": "prerequest",
 							"script": {
-								"id": "c2b67c93-6092-4af6-8523-5521d64e4ffb",
 								"exec": [
 									""
 								],
@@ -1220,8 +1212,7 @@
 					"response": []
 				}
 			],
-			"description": "This collection holds requests to provoke errors at the brokers side and inspect its error handling and resistance to such procedures.",
-			"protocolProfileBehavior": {}
+			"description": "This collection holds requests to provoke errors at the brokers side and inspect its error handling and resistance to such procedures."
 		},
 		{
 			"name": "Get Catalogs",
@@ -1365,7 +1356,6 @@
 		{
 			"listen": "prerequest",
 			"script": {
-				"id": "0105b599-4bf7-4748-8e92-d9385a4d0c1f",
 				"type": "text/javascript",
 				"exec": [
 					""
@@ -1375,7 +1365,6 @@
 		{
 			"listen": "test",
 			"script": {
-				"id": "44d36308-9146-41a2-9854-b69fe6281572",
 				"type": "text/javascript",
 				"exec": [
 					""
