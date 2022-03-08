@@ -103,7 +103,7 @@ A binding can be created manually via the CLI-Command
 cf bind-service APP_NAME SERVICE_INSTANCE [--binding-name BINDING_NAME]
 ```
 
-- **APP_NAME** ist the name of the previously created app that gets the binding injected.
+- **APP_NAME** is the name of the previously created app that gets the binding injected.
 - **SERVICE_INSTANCE** is be the name of the previously created service instance.
 
 For more information see [Cloud Foundry CLI Reference Guide](https://cli.cloudfoundry.org/en-US/v6/bind-service.html).
@@ -189,7 +189,7 @@ In the following section, the fields will be described.
 
 The following settings are defined in the schema in service_plan.schemas.service_instance.**create**.parameters.properties.rabbitmq.properties and service_plan.schemas.service_instance.**update**.parameters.properties.rabbitmq.properties
 
-> **_IMPORTANT:_** If SSL has been enabled via settings, it must not be disabled, while the service instance ist running.
+> **_IMPORTANT:_** If SSL has been enabled via settings, it must not be disabled, while the service instance is running.
 
 | Parameter | Type | Default Value | Description |
 | - | - | - | - |
