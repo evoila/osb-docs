@@ -140,64 +140,29 @@ The current parameters of a service instance can be retrieved via cli:
 
 ### Backup
 
-Prerequisites:
-- Cloud Foundry CLI installed and logged in
-- Bosh CLI installed and logged in
 
-Step-by-step guide:
-1. Get the service GUID via the CLI command: ```cf service --guid **SERVICE_INSTANCE**```. **SERVICE_INSTANCE** must be replaced with the name of the OSB-Elasticsearch instance.
-2. Get the manifest from Bosh via the CLI command ```bosh manifest -d sb-**GUID**``` and save it in a file. **GUID** must be replaced with the GUID retreived in step 1.
-3. Depending on the release version of the OSB-Elasticsearch, there a two different approaches for step 3:
-    - Releases before 28/06/2021: For **every** instance group in the manifest, add the following field to the properties:
-     ```
-     elasticsearch:
-      backup: 
-        s3:
-          clients:
-            default:
-              access_key: **S3_ACCESS_KEY**
-              secret_key: **S3_SECRET KEY**
-    ```
-   **S3_ACCESS_KEY** must be replaced with the access key for the S3 storage.
-   **S3_SECRET_KEY** must be replaced with the secret key for the S3 storage.
-    - Releases starting from 28/06/2021: For **every** instance group in the manifest, add the following field to the properties:
-     ```
-     elasticsearch:
-      backup: 
-        s3:
-          clients:
-          - name: **CLIENT_NAME**
-            access_key: **S3_ACCESS_KEY**
-            secret_key: **S3_SECRET KEY**
-    ```
-   **CLIENT_NAME** is the name of the backup client, which can be set here (using the name **default** is recommended).
-   **S3_ACCESS_KEY** must be replaced with the access key for the S3 storage.
-   **S3_SECRET_KEY** must be replaced with the secret key for the S3 storage.
-4. Deploy the new manifest via ```bosh deploy -d sb-**GUID** **FILENAME**```. **GUID** must be replaced with the GUID retreived in step 1. **FILENAME** must be the name of the file that was retreived in step 2.
-5. Get the credentials by creating a service key via the command ```cf csk **SERVICE_INSTANCE** **SERVICE_KEY_NAME** -c '{"clientMode":"superuser"}'```. **SERVICE_INSTANCE** is the name of the OSB-Elasticsearch instance. **SERVICE_KEY_NAME** is the name of the service key which can be set.
-6. Create a new repository via the Elasticsearch API (see [snapshot repository API](https://www.elastic.co/guide/en/elasticsearch/plugins/7.7/repository-s3-repository.html))
-7. Finally a snapshot can be created via the Elasticsearch API (see [Take snapshot API](https://www.elastic.co/guide/en/elasticsearch/reference/7.7/snapshots-take-snapshot.html))
+Before creating a backup, a backup client must be set up, which can be done by sending [settings](#settings) while creating/updating a service instance.
+Afterwards, a snapshot repository can be created via a request to an endpoint of the Elasticsearch API:
+```
+PUT /_snapshot/MY_REPOSITORY/
+```
+- **MY_REPOSITORY** is the name of the repository to be created
+
+After creating a snapshot repository, a snapshot can be triggered via the Elasticsearch API:
+```
+PUT /_snapshot/MY_REPOSITORY/MY_SNAPSHOT
+```
+- **MY_SNAPSHOT** is the name of the snapshot. **Must** be lowercase.
+
+Further information about using the Elasticsearch API to create a snapshot can be found [here](https://www.elastic.co/guide/en/elasticsearch/reference/current/create-snapshot-api.html)
 
 To list all snapshots you can make the request
 ```
-GET /_snapshot/**REPOSITORY_NAME**/**SNAPSHOT_NAME**
+GET /_snapshot/REPOSITORY_NAME/SNAPSHOT_NAME
 ```
-**REPOSITORY_NAME** is the name of a repository. Alternatively, the wildcard **\*** or **_all** can be used to list
+- **REPOSITORY_NAME** is the name of a repository. Alternatively, the wildcard **\*** or **_all** can be used to list all.
 
 For more information, see [Get snapshot API](https://www.elastic.co/guide/en/elasticsearch/reference/7.7/get-snapshot-repo-api.html).
-
-The following fields can/must be provided for a client:
-| Parameter | Type | Default Value | Description |
-| - | - | - | - |
-| name | string | - | The name of the client. Value MUST be set |
-| access_key | string | - | The access key of the S3 client. Value MUST be set |
-| secret_key | string | - | The secret key of the S3 client. Value MUST be set |
-| endpoint | string | "s3.amazonaws<span>.com</span>" | The S3 service endpoint to connect to |
-| read_timeout | string | "50s" | Socket timeout for connecting to S3. The value should specify the unit (e.g. "5s") |
-| max_retries | integer | 3 | Number of retries when a request fails |
-| use_throttle_retries | boolean | true | Whether retries should be throttled |
-
-Further information about using the Elasticsearch API to create a snapshot can be found [here](https://www.elastic.co/guide/en/elasticsearch/reference/current/create-snapshot-api.html)
 
 It is important to keep in mind that there is enough space for Elasticearch data and backups. The size of the backup corresponds to the size of the indices and can be further reduced (for example,see [Source Only Repositories](https://www.elastic.co/guide/en/elasticsearch/reference/6.8/modules-snapshots.html), which can reduce the size of the snapshot to 50% but does not save the indices). The size of the indices can be checked by sending a request to the Elasticsearch API (see [Index Stats API](https://www.elastic.co/guide/en/elasticsearch/reference/7.7/indices-stats.html)):
 ```
@@ -213,8 +178,95 @@ The certificates expire after 365 day. If a certificate is about to expire, cont
 If the IP variant is used and the root CA still valid, it is sufficient to use `bosh recreate`. For changing the root CA, it also has to be concatenated and multiple deploys have to be made.
 
 ## Settings
-This section covers different settings that can be made for the OSB-Elasticsearch when creating a service binding.
+This section covers different settings that can be made for the OSB-Elasticsearch and how they can be changed.
+Via the settings, certificate authorities and S3 backup clients can be added.
 
+Settings can be sent as parameters of a create/update request of a service instance via CLI.
+
+The CLI command will look like this:
+```
+cf cs BROKERNAME PLAN SERVICENAME [-c PARAMETERS_AS_JSON]
+```
+- **BROKERNAME** will be the name of the service broker which is likely going to be **osb-elasticsearch**
+- **PLAN** is the plan that is going to be used for the service instance
+- **SERVICENAME** is the name of the service which is up to the user
+- **PARAMETERS_AS_JSON** are the settings which are sent in json format
+
+For example, a cli command for creating a service instance could look like this:
+```
+cf cs osb-elasticsearch s elasticsearch-test -c '{"elasticsearch":{"backup":{"s3":{"clients": [{"name":"clientname", "access_key":"XXXXXX", "secret_key":"XXXXXX}]}}}}'
+```
+An extended example of the parameters for a create/update request for a service instance is shown below:
+```json
+{
+    "elasticsearch": {
+        "backup": {
+          "s3": {
+            "clients": [
+              {
+                "name": "first-client",
+                "access_key": "XXXXXX",
+                "secret_key": "XXXXXX",
+                "endpoint": "https://example.com",
+                "read_timeout": "5s",
+                "max_retries": 3,
+                "use_throttle_retries": true
+              },
+              {
+                "name": "amazon",
+                "access_key": "XXXXXX",
+                "secret_key": "XXXXXX"
+              }
+            ]
+          }
+        }
+    }
+}
+```
+
+In the following section, the fields will be described.
+
+### Service Instance Settings Schema
+
+The following settings are defined in the schema in service_plan.schemas.service_instance.**create**.parameters.properties.elasticsearch.properties and service_plan.schemas.service_instance.**update**.parameters.properties.elasticsearch.properties
+
+| Parameter | Type | Default Value | Description |
+| - | - | - | - |
+| ssl | SSL object | - | Settings for SSL certificates |
+| backup | [Database](#database-object) object | - | Contains database exensions |
+
+#### SSL object
+
+The SSL object contains the trusted certificate authorities and consists of the following properties:
+
+| Parameter | Type | Default Value | Description |
+| - | - | - | - |
+| certificate-authorities| string | - | A string that contains all the trusted CAs |
+
+#### Backup object
+
+| Parameter | Type | Default Value | Description |
+| - | - | - | - |
+| s3 | [S3](#s3-object) object | - | |
+
+### S3 object
+
+| Parameter | Type | Default Value | Description |
+| - | - | - | - |
+| clients | array of [Clients](#clients-object) objects | - | Multiple S3 clients can be specified within the array |
+#### Clients object
+
+Each client represents a S3 backup client.  A further explanation of the clients-fields can be found in the [Elasticsearch guide](https://www.elastic.co/guide/en/elasticsearch/plugins/current/repository-s3-client.html).
+
+| Parameter | Type | Default Value | Description |
+| - | - | - | - |
+| name | string | - | The name of the client. Value MUST be set |
+| access_key | string | - | The access key of the S3 client. Value MUST be set |
+| secret_key | string | - | The secret key of the S3 client. Value MUST be set |
+| endpoint | string | "s3.amazonaws<span>.com</span>" | The S3 service endpoint to connect to |
+| read_timeout | string | "50s" | Socket timeout for connecting to S3. The value should specify the unit (e.g. "5s") |
+| max_retries | integer | 3 | Number of retries when a request fails |
+| use_throttle_retries | boolean | true | Whether retries should be throttled |
 ### Ingress and egress binding
 
 When you create a new service binding in cloudfoundry, you can provide a client mode, either ingress or egress. The broker automatically filters the nodes and returns only the IPs corresponding to the client mode passed. If you do not specify a client mode, egress will be used.
