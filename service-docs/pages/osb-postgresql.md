@@ -19,6 +19,9 @@
       - [Config object (service instance)](#config-object-service-instance)
       - [Databases object](#databases-object)
       - [Users object](#users-object)
+      - [Replication object](#replication-object)
+      - [Resource object](#resource-object)
+      - [Logging object](#logging-object)
     - [Service Binding Settings Schema](#service-binding-settings-schema)
   - [FAQ](#faq)
     - [OSB-PostgreSQL crashed](#osb-postgresql-crashed)
@@ -234,7 +237,10 @@ The following settings are defined in the schema in service_plan.schemas.service
 | database | [Database](#database-object) object | | Contains database exensions |
 | config | [Config](#config-object-service-instance) object | | Contains settings for locks |
 | databases | array of [Databases](#databases-object) objects | | Additional databases | 
-| users | array of Users objects | |  |
+| users | array of [Users](#users-object) objects | |  |
+| replication | [Replication](#replication-object) object | | Contains settings for Write-Ahead Logging (WAL) |
+| resource | [Resource](#resource-object) object | | Contains settings for resource management |
+| logging | [Logging](#logging-object) object | | Contains settings for logs (frequency, naming, truncation) |
 
 \* **ONLY** available when creating a service instance, **NOT** when updating. Even though the field **ssl** can be sent when updating, it **MUST NOT** be used (use at own risk). Can be used if there is no HAProxy needed (when there is only one PostgreSQL instance.
 
@@ -361,8 +367,37 @@ The config object contains the settings for locks and consists of the following 
 | Parameter | Type | Default Value | Description |
 | - | - | - | - |
 | admin | boolean | | Determines, whether the user is an admin |
-| username | string | | Name of the user. The value must match the pattern "^([A-Za-z0-9_-]+|\\(\\([A-Za-z0-9._-]+\\)\\))$". MUST be set |
+| username | string | | Name of the user. The value must match the pattern '^([A-Za-z0-9_-]+|\(\([A-Za-z0-9._/-]+\)\))$'. MUST be set |
 | password | string | | Password of the user. MUST be set |
+
+#### Replication object
+
+| Parameter | Type | Default Value | Description |
+| - | - | - | - |
+| max_wal_senders | integer | 10 | Maximum number of WAL senders. Minimum is 1 |
+
+#### Resource object
+
+| Parameter | Type | Default Value | Description |
+| - | - | - | - |
+| shared_buffers | string | 0.25 * RAM | Amount of memory used for shared memory buffers. Must match pattern ^[1-9][0-9]*[KMG]B$, e.g. 512MB. This value has to be adjusted to the available RAM |
+| temp_buffers | string | 8MB | Maximum amount of memory used for temporary buffers within each database session. Must match pattern ^[1-9][0-9]*[KMG]B$ |
+| effective_cache_size | string | 0.5 * RAMB | Expected (estimate) memory to be available in the OS and buffer caches, used by query planner. Must match pattern ^[1-9][0-9]*[KMG]B$, e.g. 4096MB. This value has to be adjusted to the available RAM |
+| maintenance_work_mem | string | maintenance_work_mem = 0.1 RAM / autovacuum_max_workers | Maximum amount of memory to be used by maintenance operations, such as VACUUM, CREATE INDEX, and ALTER TABLE ADD FOREIGN KEY. Must match pattern ^[1-9][0-9]*[KMG]B$, e.g. 256MB. This value has to be adjusted to the available RAM |
+| work_mem | string | work_mem = 0.25 * RAM / max_connections | Maximum amount of memory to be used by a query operation. Must match pattern ^[1-9][0-9]*[KMG]B$, e.g. 32MB. This value has to be adjusted to the available RAM |
+| min_wal_size | string | 80MB | Minimum amount of memory reserved for WAL. As long as WAL disk usage stays below this setting, old WAL files are always recycled for future use at a checkpoint, rather than removed. Must match pattern ^[1-9][0-9]*[KMG]B$ |
+| max_wal_size | string | 1GB | Maximum size to let the WAL grow during automatic checkpoints. This is a soft limit. Must match pattern ^[1-9][0-9]*[KMG]B$ |
+| max_parallel_workers_per_gather | integer | 2 | Maximum number of workers that can be started by a single Gather or Gather Merge node |
+| max_parallel_workers | integer | 8 | Maximum number of workers that the system can support for parallel queries |
+| max_files_per_process | integer | 1000 | Maximum number of simultaneously open files allowed to each server subprocess |
+
+#### Logging object
+
+| Parameter | Type | Default Value | Description |
+| - | - | - | - |
+| filename | string | postgresql-%a.log | The filename used for logs. Uses strftime (%-escapes) |
+| rotation_age | integer | 1440 | Time (minutes) until a new log is created. Minimum is 1 |
+| truncate_on_rotation | boolean | true | Truncate (overwrite) existing log files with the same name, rather than appending new logs |
 
 ### Service Binding Settings Schema
 
