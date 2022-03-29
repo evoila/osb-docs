@@ -21,7 +21,7 @@
     - [Service Instance Zookeper Schema](#service-instance-zookeper-schema)
     - [Service Binding Settings Schema](#service-binding-settings-schema)
       - [topic_acls object](#topic_acls-object)
-      - [group_acls](#group_acls)
+      - [group_acls object](#group_acls-object)
       - [cluster_acls object](#cluster_acls-object)
   - [FAQ](#faq)
     - [OSB-Kafka crashed](#osb-kafka-crashed)
@@ -74,8 +74,6 @@ The following image shows, how a Kafka Cluster is managed:
 ![Kafka-Cluster](../assets/kafka-cluster.png)
 
 For the sake of simplicity, only topic 1 and 2 are looked at. Each topic consists of 3 partitions with 1 replication each (6 partitions per topic in total). Since the partitions of topic 1 (grey, "M"=master, "R"=replica) are spread across 2 brokers (broker A and broker B), each one stores 3 partitions. The partitions of topic 2 (light blue) are spread among 3 brokers, therefore each one stores 2 partitions. Master and replica partitions are distributed as evenly as possible. The consumer group G1 consists of 4 consumers. In case of no further configuration, each consumer of the group reads from a different partition, which means that the fourth consumer does not access any partition.
-
-?warum hatten manche topics roten rand? weg
 
 Further information about Kafka Clusters can be found [here](https://kafka.apache.org/documentation/).
 
@@ -287,22 +285,22 @@ The following settings are defined in the schema in service_plan.schemas.service
 
 | Parameter | Type | Default Value | Description |
 | - | - | - | - |
-| autopurge_purge_interval | number | 24(stunden?) | Autopurge interval. If a Zookeper object is given, this property is **required**. |
-| autopurge_snap_retain_count | number | 3 | Autopurge snap(shot?) retain count. If a Zookeper object is given, this property is **required**. |
-| cnx_timeout | number | 5(stunden?) | CNX timeout. If a Zookeper object is given, this property is **required**. |
-| election_algorim | number | 3 | Election algorithm (to avoid confusion: there is a typo in the property name)(wofür steht welche nummer?). If a Zookeper object is given, this property is **required**. |
-| force_sync | string | "yes" | Force synchronization. Valid values are "yes" and "no" (warum kein enum im schema? hinzgefügt). If a Zookeper object is given, this property is **required**. |
-| global_outstanding_limit | number | 1000 | Global outstanding limit (weiß der nutzer was damit gemeint ist? ich nicht). If a Zookeper object is given, this property is **required**. |
+| autopurge_purge_interval | number | 24 | Autopurge interval in hours. If a Zookeper object is given, this property is **required**. |
+| autopurge_snap_retain_count | number | 3 | Number of most recent snapshots to retain. If a Zookeper object is given, this property is **required**. |
+| cnx_timeout | number | 5 | Timeout in seconds for opening connections for leader election notifications. Only applicable if election_algorim = 3. If a Zookeper object is given, this property is **required**. |
+| election_algorim | number | 3 | Election implementation to use. A value of "0" corresponds to the original UDP-based version, "1" corresponds to the non-authenticated UDP-based version of fast leader election, "2" corresponds to the authenticated UDP-based version of fast leader election, and "3" corresponds to TCP-based version of fast leader election. **The implementations of leader election 0, 1 and 2 are deprecated and will be removed in future Zookeeper releases.**(jsonschema enum?). If a Zookeper object is given, this property is **required**. |
+| force_sync | string | "yes" | Force synchronization. Valid values are "yes" and "no" (checkbox?). If a Zookeper object is given, this property is **required**. |
+| global_outstanding_limit | number | 1000 | Limit of outstanding requests to the system. If a Zookeper object is given, this property is **required**. |
 | init_limit | number | 5 | Connection retries. If a Zookeper object is given, this property is **required**. |
-| leader_serves | string | "yes" | Client connections to leader. Valid values are "yes" and "no" (?enum ergänzt). If a Zookeper object is given, this property is **required**. |
+| leader_serves | string | "yes" | Client connections to leader. Valid values are "yes" and "no" (?checkbox). If a Zookeper object is given, this property is **required**. |
 | max_client_connections | number | 60 | Maximum number of client connections. If a Zookeper object is given, this property is **required**. |
 | max_session_timeout | number | 40000 | Maximum session timeout in ms. If a Zookeper object is given, this property is **required**. |
 | min_session_timeout | number | 4000 | Minimum session timeout in ms. If a Zookeper object is given, this property is **required**. |
-| pre_allocation_size | number | 65536 | Pre-allocation size for transaction log blocks (KB). If a Zookeper object is given, this property is **required**. |
-| snap_count | number | 100000 | Snap(shot?) count. If a Zookeper object is given, this property is **required**. |
+| pre_allocation_size | number | 65536 | Pre-allocation size for transaction log blocks in KB. If a Zookeper object is given, this property is **required**. |
+| snap_count | number | 100000 | Snapshot count. If a Zookeper object is given, this property is **required**. |
 | sync_enabled | boolean | true | Synchronization enabled. If a Zookeper object is given, this property is **required**. |
 | sync_limit | number | 2 | Synchronization limit. If a Zookeper object is given, this property is **required**. |
-| tick_time | number | 2000 | Single tick time (in ms?). If a Zookeper object is given, this property is **required**. |
+| tick_time | number | 2000 | Single tick time in ms. If a Zookeper object is given, this property is **required**. |
 | warning_threshold_ms | number | 1000 | Warning threshold in ms. If a Zookeper object is given, this property is **required**.  | 
 
 ### Service Binding Settings Schema
@@ -343,33 +341,34 @@ An extended example of the parameters for a create request for a service binding
 | Parameter | Type | Default Value | Description |
 | - | - | - | - |
 | service_key_name | string | - | The name of the service binding. This parameter is **required**. |
-| topic_acls | array of [topic_acls objects](#topic_acls-object) | - | ? |
-| group_acls | array of [group_acls objects](#group_acls-object) | - | ? |
-| cluster_acls | array of [cluster_acls objects](#cluster_acls-object) | - | ? |
+| topic_acls | array of [topic_acls objects](#topic_acls-object) | - | ACLS (Access Control Lists) for topics. |
+| group_acls | array of [group_acls objects](#group_acls-object) | - | ACLS for groups |
+| cluster_acls | array of [cluster_acls objects](#cluster_acls-object) | - | ACLS for clusters |
 
 #### topic_acls object
 
-blabla?
+This object contains the rights for a topic access control list. More detailed information can be found in the [Kafka docs](https://kafka.apache.org/28/documentation.html#security_authz).
 
 | Parameter | Type | Default Value | Description |
 | - | - | - | - |
-| topic | string | * | The name of the topic to be created?. ?hier regex? If a topic_acls object is given, this parameter is **required**. |
-| rights | array of string | - | Sets the rights of the topic (?). Valid values are "All", "Alter", "AlterConfigs", "Create", "Delete", "Describe", "DescribeConfigs", "Read" and "Write". If a topic_acls object is given, this parameter is **required**. |
+| topic | string | * | The name of the topic. Giving a regex is possible - this will select multiple topics. If a topic_acls object is given, this parameter is **required**. |
+| rights | array of string | - | Sets the rights of a topic. Valid values are "All", "Alter", "AlterConfigs", "Create", "Delete", "Describe", "DescribeConfigs", "Read" and "Write". If a topic_acls object is given, this parameter is **required**. |
 
-#### group_acls 
+#### group_acls object
 
 | Parameter | Type | Default Value | Description |
 | - | - | - | - |
-| group | string | * | Name of a (consumer?producer? egal?) group?. If a group_acls object is given, this parameter is **required**. |
+| group | string | * | Name of a (consumer?producer? egal?) group. If a group_acls object is given, this parameter is **required**. |
 | rights | array of string | "All" | Sets the rights of the group. Valid values are "All", "Delete", "Describe" and "Read". If a group_acls object is given, this parameter is **required**. |
 
 #### cluster_acls object
 
 Warum ist cluster_acls als array of objects definiert, wenn "maxItems: 1"? Macht das array da überhaupt Sinn?
+The cluster_acls object sets the access rights within the cluster?
 
 | Parameter | Type | Default Value | Description |
 | - | - | - | - |
-| rights | array of string | "All" | Sets the rights of the cluster?. Valid values are "All", "Alter", "AlterConfigs", "ClusterAction", "Create", "Describe", "DescribeConfigs", "IdempotentWrite". If a cluster_acls object is given, this parameter is **required**. |
+| rights | array of string | "All" | Sets the rights of the cluster. Valid values are "All", "Alter", "AlterConfigs", "ClusterAction", "Create", "Describe", "DescribeConfigs", "IdempotentWrite". If a cluster_acls object is given, this parameter is **required**. |
 
 ## FAQ
 
@@ -390,9 +389,9 @@ The following causes can lead to a failure: ?passt das noch?
 Access to the VM via [Bosh CLI](https://bosh.io/docs/cli-v2/) is required for debugging. The logs of Kafka can be acquired within the VM under:
 
 ```
-/var/vcap/sys/log/redis/?ALL?
+/var/vcap/sys/log/redis/ALL?
 ```
-??hiweis auf redis-cli? unter /var/vcap/packages/redis/bin
+?hiweis auf redis-cli unter /var/vcap/packages/redis/bin
 
 If the error **cannot be fixed**, a new instance has to be created and restored by using a backup.
 
