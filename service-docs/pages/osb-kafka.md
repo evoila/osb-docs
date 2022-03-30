@@ -1,10 +1,10 @@
 # OSB-Kafka
 - [OSB-Kafka](#osb-kafka)
-  - [Overview TODO](#overview-todo)
+  - [Overview](#overview)
     - [Key Features](#key-features)
     - [Software used by OSB-Kafka](#software-used-by-osb-kafka)
-    - [Cluster TODO](#cluster-todo)
-      - [Terminology:](#terminology)
+    - [Cluster](#cluster)
+      - [Terminology](#terminology)
   - [Requirements](#requirements)
   - [How to](#how-to)
     - [Create a Service Instance](#create-a-service-instance)
@@ -12,8 +12,8 @@
     - [Create a Service Binding](#create-a-service-binding)
     - [Acquiring Service Instance Parameters](#acquiring-service-instance-parameters)
     - [Change SSL Certificates](#change-ssl-certificates)
-  - [Settings TODO](#settings-todo)
-    - [Service Instance Settings Schema TODO](#service-instance-settings-schema-todo)
+  - [Settings](#settings)
+    - [Service Instance Settings Schema](#service-instance-settings-schema)
       - [logging object](#logging-object)
       - [config object](#config-object)
       - [security object](#security-object)
@@ -26,13 +26,12 @@
   - [FAQ](#faq)
     - [OSB-Kafka crashed](#osb-kafka-crashed)
     - [A Kafka master/replica instance crashed](#a-kafka-masterreplica-instance-crashed)
-    - [The size of the backup was bigger than expected (and failed) and now all of my storage space is occupied TODO](#the-size-of-the-backup-was-bigger-than-expected-and-failed-and-now-all-of-my-storage-space-is-occupied-todo)
   - [Appendix](#appendix)
     - [JSON-Schema](#json-schema)
 
 ---
 
-## Overview TODO
+## Overview
 
 [Apache Kafka](https://kafka.apache.org/) is one of the most popular event streaming platforms that offers high-performance data pipelines, streaming analytics, data integration and mission-critical applications. Event streaming allows for publishing (writing) and subscribing (reading) streams of events in real-time.
 
@@ -56,11 +55,12 @@ Some of Apache Kafkas key features are:
 The OSB-Kafka offers different service plans which vary in allocated memory, cpu, disc-size and number of vms created for PostgreSQL.
 
 ### Software used by OSB-Kafka
-- **Kafka**: 2.12?
+- **Kafka**: 2.12
+- **Zookeeper**: 3.4.10
 
-### Cluster TODO
+### Cluster
 
-#### Terminology:
+#### Terminology
 
 - Broker: Brokers form the storage layer of a Kafka cluster. Partitions of topics are spread on different brokers.
 - Topic: Topics durably store events/messages. Producers/Consumers access only the topic specified. E.g. if a consumer subscribes to the topic "monitoring" it will only consume the events/messages stored in "monitoring". After consumption, events are not deleted from the topic. Replication is performed at the level of topic-partitions.
@@ -128,7 +128,6 @@ cf bind-service APP_NAME SERVICE_INSTANCE [-c PARAMETERS_AS_JSON] [--binding-nam
 For more information see [Cloud Foundry CLI Reference Guide](https://cli.cloudfoundry.org/en-US/v6/bind-service.html).
 After creating a binding, the app has to be restarted for the changes to take effect.
 
-TODO
 Aternatively, if there is a dashboard set up (like the Stratos Dashboard for example), it can be used to create a service binding.
 
 ### Acquiring Service Instance Parameters
@@ -151,7 +150,7 @@ If the IP variant is used and the root CA still valid, it is sufficient to use `
 
 > **_IMPORTANT:_** Only the SSL certificates of the Kafka instances have to be renewed.
 
-## Settings TODO
+## Settings
 This section covers different settings that can be made for the OSB-Kafka, their default values and how they can be changed.
 
 Settings can be sent as parameters of a create/update request of a service instance via CLI.
@@ -212,7 +211,6 @@ An extended example of the parameters for a create/update request for a service 
         "autopurge_purge_interval": 20,
         "autopurge_snap_retain_count": 4,
         "cnx_timeout": 5,
-        "election_algorim": 3,
         "force_sync": "yes",
         "global_outstanding_limit": 900,
         "init_limit": 6,
@@ -231,7 +229,7 @@ An extended example of the parameters for a create/update request for a service 
 }
 ```
 
-### Service Instance Settings Schema TODO
+### Service Instance Settings Schema
 
 The following settings are defined in the schema in service_plan.schemas.service_instance.**create**.parameters.properties.kafka.properties and service_plan.schemas.service_instance.**update**.parameters.properties.kafka.properties.
 
@@ -287,12 +285,11 @@ The following settings are defined in the schema in service_plan.schemas.service
 | - | - | - | - |
 | autopurge_purge_interval | number | 24 | Autopurge interval in hours. If a Zookeper object is given, this property is **required**. |
 | autopurge_snap_retain_count | number | 3 | Number of most recent snapshots to retain. If a Zookeper object is given, this property is **required**. |
-| cnx_timeout | number | 5 | Timeout in seconds for opening connections for leader election notifications. Only applicable if election_algorim = 3. If a Zookeper object is given, this property is **required**. |
-| election_algorim | number | 3 | Election implementation to use. A value of "0" corresponds to the original UDP-based version, "1" corresponds to the non-authenticated UDP-based version of fast leader election, "2" corresponds to the authenticated UDP-based version of fast leader election, and "3" corresponds to TCP-based version of fast leader election. **The implementations of leader election 0, 1 and 2 are deprecated and will be removed in future Zookeeper releases.**(jsonschema enum?). If a Zookeper object is given, this property is **required**. |
-| force_sync | string | "yes" | Force synchronization. Valid values are "yes" and "no" (checkbox?). If a Zookeper object is given, this property is **required**. |
+| cnx_timeout | number | 5 | Timeout in seconds for opening connections for leader election notifications. If a Zookeper object is given, this property is **required**. |
+| force_sync | string | "yes" | Force synchronization. Valid values are "yes" and "no". If a Zookeper object is given, this property is **required**. |
 | global_outstanding_limit | number | 1000 | Limit of outstanding requests to the system. If a Zookeper object is given, this property is **required**. |
 | init_limit | number | 5 | Connection retries. If a Zookeper object is given, this property is **required**. |
-| leader_serves | string | "yes" | Client connections to leader. Valid values are "yes" and "no" (?checkbox). If a Zookeper object is given, this property is **required**. |
+| leader_serves | string | "yes" | Client connections to leader. Valid values are "yes" and "no". If a Zookeper object is given, this property is **required**. |
 | max_client_connections | number | 60 | Maximum number of client connections. If a Zookeper object is given, this property is **required**. |
 | max_session_timeout | number | 40000 | Maximum session timeout in ms. If a Zookeper object is given, this property is **required**. |
 | min_session_timeout | number | 4000 | Minimum session timeout in ms. If a Zookeper object is given, this property is **required**. |
@@ -358,13 +355,12 @@ This object contains the rights for a topic access control list. More detailed i
 
 | Parameter | Type | Default Value | Description |
 | - | - | - | - |
-| group | string | * | Name of a (consumer?producer? egal?) group. If a group_acls object is given, this parameter is **required**. |
+| group | string | * | Name of a group. If a group_acls object is given, this parameter is **required**. |
 | rights | array of string | "All" | Sets the rights of the group. Valid values are "All", "Delete", "Describe" and "Read". If a group_acls object is given, this parameter is **required**. |
 
 #### cluster_acls object
 
-Warum ist cluster_acls als array of objects definiert, wenn "maxItems: 1"? Macht das array da überhaupt Sinn?
-The cluster_acls object sets the access rights within the cluster?
+The cluster_acls object sets the access rights within the cluster.
 
 | Parameter | Type | Default Value | Description |
 | - | - | - | - |
@@ -380,7 +376,7 @@ If the service broker crashes, the operator should be contacted.
 
 As long as there is at least one replica partition of a lost master partition or the master partition running after an instance failed, Kafka is still functional.
 
-The following causes can lead to a failure: ?passt das noch?
+The following causes can lead to a failure:
 - IaaS problems with VMs, network or storage
 - Storage space completely occupied
 - SSL certificates expired
@@ -389,15 +385,16 @@ The following causes can lead to a failure: ?passt das noch?
 Access to the VM via [Bosh CLI](https://bosh.io/docs/cli-v2/) is required for debugging. The logs of Kafka can be acquired within the VM under:
 
 ```
-/var/vcap/sys/log/redis/ALL?
+/var/vcap/sys/log/kafka/
 ```
-?hiweis auf redis-cli unter /var/vcap/packages/redis/bin
 
-If the error **cannot be fixed**, a new instance has to be created and restored by using a backup.
+The logs of Zookeeper can be acquired within the Zookeeper-VM under:
 
-### The size of the backup was bigger than expected (and failed) and now all of my storage space is occupied TODO
+```
+/var/vcap/sys/log/zookeper/
+```
 
-In this case, contact the operator.
+If the error **cannot be fixed**, a new instance has to be created.
 
 ## Appendix
 
@@ -650,10 +647,6 @@ schemas: &schemas
                           default: 5
                           title: CNX Timeout
                           type: number
-                        election_algorim:
-                          default: 3
-                          title: Election Implementation
-                          type: number
                         force_sync:
                           default: "yes"
                           enums:
@@ -716,7 +709,6 @@ schemas: &schemas
                       - autopurge_purge_interval
                       - autopurge_snap_retain_count
                       - cnx_timeout
-                      - election_algorim
                       - warning_threshold_ms
                       - global_outstanding_limit
                       - init_limit
