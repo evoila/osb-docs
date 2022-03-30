@@ -1,4 +1,9 @@
-### DONT SAVE CREDENTIALS IN REPOSITORYS. INSTEAD SAVE THEM IN A CREDENTIAL STORE###
+####################################################################################################################
+### IMPORTANT                                                                                                    ###
+### this yaml contains example plans. please change the values, that are tagged with "CHANGE" in different plans ###
+###                                                                                                              ###
+### DONT SAVE CREDENTIALS IN REPOSITORYS. INSTEAD SAVE THEM IN A CREDENTIAL STORE                                ###
+####################################################################################################################
 
 
 backup:
@@ -99,99 +104,99 @@ catalog:
                           type: string
                           default: "TLSv1.2"
                           enums:
-                          - TLSv1
-                          - TLSv1.1
-                          - TLSv1.2
-                          - TLSv1.3
-                          - ""
+                            - TLSv1
+                            - TLSv1.1
+                            - TLSv1.2
+                            - TLSv1.3
+                            - ""
                         max_protocol_version:
                           title: minimal TLS version
                           type: string
                           default: "TLSv1.3"
                           enums:
-                          - TLSv1
-                          - TLSv1.1
-                          - TLSv1.2
-                          - TLSv1.3
-                          - ""
+                            - TLSv1
+                            - TLSv1.1
+                            - TLSv1.2
+                            - TLSv1.3
+                            - ""
                     database:
                       type: object
                       properties:
                         extensions:
                           items:
-                          - type: string
-                            enums: &extension 
-                            - address_standardizer
-                            - address_standardizer_data_us
-                            - adminpack
-                            - amcheck
-                            - autoinc
-                            - bloom
-                            - bool_plperl
-                            - bool_plperlu
-                            - btree_gin
-                            - btree_gist
-                            - citext
-                            - cube
-                            - dblink
-                            - dict_int
-                            - dict_xsyn
-                            - earthdistance
-                            - file_fdw
-                            - fuzzystrmatch
-                            - hstore
-                            - hstore_plperl
-                            - hstore_plperlu
-                            - hstore_plpython2u
-                            - hstore_plpython3u
-                            - hstore_plpythonu
-                            - insert_username
-                            - intagg
-                            - intarray
-                            - isn
-                            - jsonb_plperl
-                            - jsonb_plperlu
-                            - jsonb_plpython2u
-                            - jsonb_plpython3u
-                            - jsonb_plpythonu
-                            - lo
-                            - ltree
-                            - ltree_plpython2u
-                            - ltree_plpython3u
-                            - ltree_plpythonu
-                            - moddatetime
-                            - old_snapshot
-                            - pageinspect
-                            - pg_buffercache
-                            - pgcrypto
-                            - pg_freespacemap
-                            - pg_prewarm
-                            - pgrowlocks
-                            - pg_stat_statements
-                            - pgstattuple
-                            - pg_surgery
-                            - pg_trgm
-                            - pg_visibility
-                            - plperl
-                            - plperlu
-                            - plpgsql
-                            - plpython3u
-                            - postgis
-                            - postgis_raster
-                            - postgis_sfcgal
-                            - postgis_tiger_geocoder
-                            - postgis_topology
-                            - postgres_fdw
-                            - refint
-                            - seg
-                            - sslinfo
-                            - tablefunc
-                            - tcn
-                            - tsm_system_rows
-                            - tsm_system_time
-                            - unaccent
-                            - uuid-ossp
-                            - xml2
+                            - type: string
+                              enums: &extension
+                                - address_standardizer
+                                - address_standardizer_data_us
+                                - adminpack
+                                - amcheck
+                                - autoinc
+                                - bloom
+                                - bool_plperl
+                                - bool_plperlu
+                                - btree_gin
+                                - btree_gist
+                                - citext
+                                - cube
+                                - dblink
+                                - dict_int
+                                - dict_xsyn
+                                - earthdistance
+                                - file_fdw
+                                - fuzzystrmatch
+                                - hstore
+                                - hstore_plperl
+                                - hstore_plperlu
+                                - hstore_plpython2u
+                                - hstore_plpython3u
+                                - hstore_plpythonu
+                                - insert_username
+                                - intagg
+                                - intarray
+                                - isn
+                                - jsonb_plperl
+                                - jsonb_plperlu
+                                - jsonb_plpython2u
+                                - jsonb_plpython3u
+                                - jsonb_plpythonu
+                                - lo
+                                - ltree
+                                - ltree_plpython2u
+                                - ltree_plpython3u
+                                - ltree_plpythonu
+                                - moddatetime
+                                - old_snapshot
+                                - pageinspect
+                                - pg_buffercache
+                                - pgcrypto
+                                - pg_freespacemap
+                                - pg_prewarm
+                                - pgrowlocks
+                                - pg_stat_statements
+                                - pgstattuple
+                                - pg_surgery
+                                - pg_trgm
+                                - pg_visibility
+                                - plperl
+                                - plperlu
+                                - plpgsql
+                                - plpython3u
+                                - postgis
+                                - postgis_raster
+                                - postgis_sfcgal
+                                - postgis_tiger_geocoder
+                                - postgis_topology
+                                - postgres_fdw
+                                - refint
+                                - seg
+                                - sslinfo
+                                - tablefunc
+                                - tcn
+                                - tsm_system_rows
+                                - tsm_system_time
+                                - unaccent
+                                - uuid-ossp
+                                - xml2
                           type: array
                     config:
                       properties:
@@ -219,49 +224,143 @@ catalog:
                           type: integer
                           minimum: 10
                           default: 64
+                        max_connections:
+                          title: Maximum number of connections the Server may accept. work_mem has to be adjusted accordingly
+                          type: integer
+                          default: 50
+                          minimum: 2
+                        autovacuum_max_workers:
+                          title: Specifies the maximum number of autovacuum processes. Affects maintenance_work_mem
+                          type: integer
+                          default: 3
+                          minimum: 1
                       required:
-                      - authentication_timeout
-                      - max_locks_per_transaction
-                      - max_pred_locks_per_transaction
-                      - max_pred_locks_per_relation
-                      - max_pred_locks_per_page
+                        - authentication_timeout
+                        - max_locks_per_transaction
+                        - max_pred_locks_per_transaction
+                        - max_pred_locks_per_relation
+                        - max_pred_locks_per_page
+                        - max_connections
+                        - autovacuum_max_workers
                       title: General PostgreSQL Settings
                       type: object
                     databases:
                       items:
-                      - properties:
-                          name:
-                            pattern: ^[A-Za-z0-9_-]+$
-                            type: string
-                          users:
-                            items:
-                            - type: string
-                              pattern: '^([A-Za-z0-9_-]+|\(\([A-Za-z0-9._-]+\)\))$'
-                            type: array
-                          extensions:
-                            items:
-                            - type: string
-                              enums: *extension 
-                            type: array
-                        required:
-                        - name
-                        type: object
+                        - properties:
+                            name:
+                              pattern: ^[A-Za-z0-9_-]+$
+                              type: string
+                            users:
+                              items:
+                                - type: string
+                                  pattern: '^([A-Za-z0-9_-]+|\(\([A-Za-z0-9._-]+\)\))$'
+                              type: array
+                            extensions:
+                              items:
+                                - type: string
+                                  enums: *extension
+                              type: array
+                          required:
+                            - name
+                          type: object
                       type: array
                     users:
                       items:
-                      - properties:
-                          admin:
-                            type: boolean
-                          password:
-                            type: string
-                          username:
-                            pattern: '^([A-Za-z0-9_-]+|\(\([A-Za-z0-9._-]+\)\))$'
-                            type: string
-                        required:
-                        - username
-                        - password
-                        type: object
+                        - properties:
+                            admin:
+                              type: boolean
+                            password:
+                              type: string
+                            username:
+                              pattern: '^([A-Za-z0-9_-]+|\(\([A-Za-z0-9._/-]+\)\))$'
+                              type: string
+                          required:
+                            - username
+                            - password
+                          type: object
                       type: array
+                    replication:
+                      type: object
+                      title: Write-Ahead Logging (WAL) settings
+                      properties:
+                        max_wal_senders:
+                          type: integer
+                          title: Maximum WAL senders.
+                          default: 10
+                          minimum: 1
+                    resource:
+                      title: Settings for managing resources
+                      type: object
+                      properties:
+                        shared_buffers:
+                          ### CHANGE
+                          title: Amount of memory used for shared memory buffers, 0.25 * RAM recommended.
+                          type: string
+                          pattern: ^[1-9][0-9]*[KMG]B$
+                          default: 2048MB
+                        temp_buffers:
+                          title: Maximum amount of memory used for temporary buffers within each database session
+                          type: string
+                          pattern: ^[1-9][0-9]*[KMG]B$
+                          default: 8MB
+                        effective_cache_size:
+                          ### CHANGE
+                          title: Expected (estimate) memory to be available in the OS and buffer caches, used by query planner. 0.5 * RAM recommended
+                          type: string
+                          pattern: ^[1-9][0-9]*[KMG]B$
+                          default: 4096MB
+                        maintenance_work_mem:
+                          ### CHANGE
+                          title: Maximum amount of memory to be used by maintenance operations, such as VACUUM, CREATE INDEX, and ALTER TABLE ADD FOREIGN KEY.  maintenance_mem = 0.1 RAM / autovacuum_max_workers
+                          type: string
+                          pattern: ^[1-9][0-9]*[KMG]B$
+                          default: 256MB
+                        work_mem:
+                          ### CHANGE
+                          title: Maximum amount of memory to be used by a query operation. work_mem = 0.25 * RAM / max_connections
+                          type: string
+                          pattern: ^[1-9][0-9]*[KMG]B$
+                          default: 32MB
+                        min_wal_size:
+                          title: Minimum amount of disk memory reserved for WAL. As long as WAL disk usage stays below this setting, old WAL files are always recycled for future use at a checkpoint, rather than removed
+                          type: string
+                          pattern: ^[1-9][0-9]*[KMG]B$
+                          default: 80MB
+                        max_wal_size:
+                          title: Maximum size to let the WAL grow during automatic checkpoints. This is a soft limit
+                          type: string
+                          pattern: ^[1-9][0-9]*[KMG]B$
+                          default: 1GB
+                        max_parallel_workers_per_gather:
+                          title: Maximum number of workers that can be started by a single Gather or Gather Merge node. Resource limits such as work_mem are applied individually to each worker. Limited by max_parallel_workers
+                          type: integer
+                          default: 2
+                        max_parallel_workers:
+                          title: Maximum number of workers that the system can support for parallel queries
+                          type: integer
+                          default: 8
+                        max_files_per_process:
+                          title: Maximum number of simultaneously open files allowed to each server subprocess
+                          type: integer
+                          default: 1000
+                    logging:
+                      title: Logging
+                      description: Determines how often logs should be created, which also affects the log name
+                      type: object
+                      properties:
+                        filename:
+                          title: The filename used for logs. Uses strftime (%-escapes)
+                          type: string
+                          default: postgresql-%a.log
+                        rotation_age:
+                          title: Time (minutes) until a new log is created
+                          type: integer
+                          default: 1440
+                          minimum: 1
+                        truncate_on_rotation:
+                          title: Truncate (overwrite) existing log files with the same name
+                          type: boolean
+                          default: true
                   title: ProgreSQL Configuration
                   type: object
               schema: http://json-schema.org/draft-06/schema
