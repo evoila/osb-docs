@@ -1,0 +1,49 @@
+    - description: A good production setup providing availability and performance
+        by separating data ingestion as well as search load from data management and
+        cluster management.
+      free: false
+      id: C8704852-A3C3-4038-AE77-04A5E8331C32
+      metadata:
+        connections: 10000
+        egress_instance_group: coordinating_nodes
+        ingress_instance_group: ingest_nodes
+        instance_group_config:
+        - name: data_nodes
+          nodes: 2
+        - name: master_eligible_nodes
+          nodes: 3
+          provides:
+            database:
+              as: discovery_nodes
+        - name: ingest_nodes
+          nodes: 2
+        - name: coordinating_nodes
+          nodes: 2
+        - name: general_nodes
+          nodes: 0
+          provides:
+            database:
+              as: general_nodes
+        networks:
+        - name: default
+        persistent_disk_type: 500GB
+        properties:
+          elasticsearch:
+            discovery:
+              minimum_master_nodes: 2
+            plugins:
+              repository-s3: repository-s3
+            xpack:
+              security:
+                enabled: true
+                http:
+                  ssl:
+                    ca-key: ((<bosh-name>/osb/postgres/ca.private_key)) #bosh credhub path or string used as root-ca
+                    certificate-authorities: ((/<bosh-name>/osb/postgres/ca.certificate))((/<bosh-name>/osb/postgres/ca.ca)) #bosh credhub path or string used as root-ca
+                    enabled: true
+                transport:
+                  ssl:
+                    enabled: true
+        vm_type: default
+      name: xxl
+      platform: BOSH
