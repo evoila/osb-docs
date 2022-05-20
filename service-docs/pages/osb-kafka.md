@@ -19,10 +19,6 @@
       - [security object](#security-object)
       - [users object](#users-object)
     - [Service Instance Zookeper Schema](#service-instance-zookeper-schema)
-    - [Service Binding Settings Schema](#service-binding-settings-schema)
-      - [topic_acls object](#topic_acls-object)
-      - [group_acls object](#group_acls-object)
-      - [cluster_acls object](#cluster_acls-object)
   - [FAQ](#faq)
     - [OSB-Kafka crashed](#osb-kafka-crashed)
     - [A Kafka master/replica instance crashed](#a-kafka-masterreplica-instance-crashed)
@@ -270,7 +266,7 @@ The following settings are defined in the schema in service_plan.schemas.service
 
 | Parameter | Type | Default Value | Description |
 | - | - | - | - |
-| setup_secure_client_connection | boolean | 0 | Secure client connection. If a security object is given, this property is **required**. |
+| setup_secure_client_connection | boolean | false | Secure client connection. If a security object is given, this property is **required**. |
 
 #### users object
 
@@ -299,72 +295,6 @@ The following settings are defined in the schema in service_plan.schemas.service
 | sync_limit | number | 2 | Synchronization limit. If a Zookeper object is given, this property is **required**. |
 | tick_time | number | 2000 | Single tick time in ms. If a Zookeper object is given, this property is **required**. |
 | warning_threshold_ms | number | 1000 | Warning threshold in ms. If a Zookeper object is given, this property is **required**.  | 
-
-### Service Binding Settings Schema
-
-The following settings are defined in the schema in service_plan.schemas.service_binding.**create**.parameters.properties
-An extended example of the parameters for a create request for a service binding is shown below:
-```json
-{
-  "service_key_name": "servicekey",
-  "topic_acls": [
-    {
-      "topic": "mytopic",
-      "rights": [
-        "Read",
-        "Write"
-      ]
-    }
-  ],
-  "group_acls": [
-    {
-      "group": "mygroup",
-      "rights": [
-        "All"
-      ]
-    }
-  ],
-  "cluster_acls": [
-    {
-      "rights": [
-        "ClusterAction",
-        "Describe"
-      ]
-    }
-  ]
-}
-```
-
-| Parameter | Type | Default Value | Description |
-| - | - | - | - |
-| service_key_name | string | - | The name of the service binding. This parameter is **required**. |
-| topic_acls | array of [topic_acls objects](#topic_acls-object) | - | ACLS (Access Control Lists) for topics. |
-| group_acls | array of [group_acls objects](#group_acls-object) | - | ACLS for groups |
-| cluster_acls | array of [cluster_acls objects](#cluster_acls-object) | - | ACLS for clusters |
-
-#### topic_acls object
-
-This object contains the rights for a topic access control list. More detailed information can be found in the [Kafka docs](https://kafka.apache.org/28/documentation.html#security_authz).
-
-| Parameter | Type | Default Value | Description |
-| - | - | - | - |
-| topic | string | * | The name of the topic. Giving a regex is possible - this will select multiple topics. If a topic_acls object is given, this parameter is **required**. |
-| rights | array of string | - | Sets the rights of a topic. Valid values are "All", "Alter", "AlterConfigs", "Create", "Delete", "Describe", "DescribeConfigs", "Read" and "Write". If a topic_acls object is given, this parameter is **required**. |
-
-#### group_acls object
-
-| Parameter | Type | Default Value | Description |
-| - | - | - | - |
-| group | string | * | Name of a group. If a group_acls object is given, this parameter is **required**. |
-| rights | array of string | "All" | Sets the rights of the group. Valid values are "All", "Delete", "Describe" and "Read". If a group_acls object is given, this parameter is **required**. |
-
-#### cluster_acls object
-
-The cluster_acls object sets the access rights within the cluster.
-
-| Parameter | Type | Default Value | Description |
-| - | - | - | - |
-| rights | array of string | "All" | Sets the rights of the cluster. Valid values are "All", "Alter", "AlterConfigs", "ClusterAction", "Create", "Describe", "DescribeConfigs", "IdempotentWrite". If a cluster_acls object is given, this parameter is **required**. |
 
 ## FAQ
 
@@ -402,89 +332,6 @@ If the error **cannot be fixed**, a new instance has to be created.
 
 ```
 schemas: &schemas
-        service_binding:
-          create:
-            parameters:
-              properties:
-                service_key_name:
-                  title: Service Key name
-                  type: string
-                topic_acls:
-                  type: array 
-                  items:
-                  - properties:
-                      topic:
-                        type: string
-                        default: '*'
-                      rights:
-                        type: array
-                        uniqueItems: true
-                        items: 
-                        - type: string
-                          enums:
-                          - All
-                          - Alter
-                          - AlterConfigs
-                          - Create
-                          - Delete
-                          - Describe
-                          - DescribeConfigs
-                          - Read
-                          - Write
-                    type: object
-                    required:
-                    - topic
-                    - rights
-                group_acls:
-                  type: array
-                  items:
-                  - properties:
-                      group:
-                        type: string
-                        default: '*'
-                      rights:
-                        type: array
-                        uniqueItems: true
-                        items: 
-                        - type: string
-                          enums:
-                          - All
-                          - Delete
-                          - Describe
-                          - Read
-                        default: 'All'
-                    type: object
-                    required:
-                    - group
-                    - rights
-                cluster_acls:
-                  type: array
-                  maxItems: 1
-                  items:
-                  - properties:
-                      rights:
-                        type: array
-                        uniqueItems: true
-                        items: 
-                        - type: string
-                          enums:
-                          - All
-                          - Alter
-                          - AlterConfigs
-                          - ClusterAction
-                          - Create
-                          - Describe
-                          - DescribeConfigs
-                          - IdempotentWrite
-                        default: 'All'
-                    type: object
-                    required:
-                    - rights
-              required:
-              - service_key_name
-              schema: http://json-schema.org/draft-04/schema#
-              type: object
-              title: Service Key Parameters
         service_instance:
           create: &createUpdate
             parameters:
@@ -496,13 +343,13 @@ schemas: &schemas
                         log_level:
                           default: "INFO"
                           enums:
-                            - ALL
-                            - DEBUG
-                            - INFO
-                            - WARN
-                            - ERROR
-                            - FATAL
-                            - OFF
+                            - "ALL"
+                            - "DEBUG"
+                            - "INFO"
+                            - "WARN"
+                            - "ERROR"
+                            - "FATAL"
+                            - "OFF"
                             - TRACE
                           title: Kafka Log Level (ALL, DEBUG, INFO, WARN, ERROR, FATAL, OFF, TRACE)
                           type: string
@@ -650,8 +497,8 @@ schemas: &schemas
                         force_sync:
                           default: "yes"
                           enums:
-                            - yes
-                            - no
+                            - "yes"
+                            - "no"
                           title: Force Synchronization (yes/no)
                           type: string
                         global_outstanding_limit:
@@ -665,8 +512,8 @@ schemas: &schemas
                         leader_serves:
                           default: "yes"
                           enums:
-                            - yes
-                            - no
+                            - "yes"
+                            - "no"
                           title: Client Connections To Leader (yes/no)
                           type: string
                         max_client_connections:
