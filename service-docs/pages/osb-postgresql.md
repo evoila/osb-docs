@@ -351,6 +351,9 @@ The config object contains the settings for locks and consists of the following 
 | max_pred_locks_per_relation | integer | -2 | [runtime-config-locks](https://www.postgresql.org/docs/13/runtime-config-locks.html). Value MUST be set|
 | max_pred_locks_per_page | integer | 2 | [runtime-config-locks](https://www.postgresql.org/docs/13/runtime-config-locks.html). Value MUST be set and value≥1 |
 | authentication_timeout | integer | 30 | Login time in seconds. Value MUST be set and value≥1 |
+| max_connections | integer | 100 | Maximum number of connections that the server may accept. Changing the value requires postgresql to reallocate working memory which can only be applied after a restart after deploying. This can lead to a short downtime < 1s of postgresql. |
+| max_prepared_transactions | integer | 0 | Max number of transactions that can be in the prepared state simultaneously. Setting this parameter to zero disables the prepared-transaction feature. |
+| track_commit_timestamp | string | off | Record commit time of transactions. Value can be either on or off. |
 
 #### Databases object
 
@@ -375,6 +378,7 @@ The config object contains the settings for locks and consists of the following 
 | Parameter | Type | Default Value | Description |
 | - | - | - | - |
 | max_wal_senders | integer | 10 | Maximum number of WAL senders. Minimum is 1 |
+| wal_level | string | replica | Determines how much information is written to the WAL. Possible values are replica, minimal, logical and hot_standby (which is mapped to replica). |
 
 #### Resource object
 
@@ -390,6 +394,9 @@ The config object contains the settings for locks and consists of the following 
 | max_parallel_workers_per_gather | integer | 2 | Maximum number of workers that can be started by a single Gather or Gather Merge node |
 | max_parallel_workers | integer | 8 | Maximum number of workers that the system can support for parallel queries |
 | max_files_per_process | integer | 1000 | Maximum number of simultaneously open files allowed to each server subprocess |
+| max_worker_processes | integer | 2 | Sets the maximum number of background processes that the system can support. |
+
+> **_IMPORTANT:_** While it is possible to declare the field wal_log_hints inside the Resource object, changes to its value will have no effect. This is caused by a bug auf Patroni, which states that changes have been made but does not actually apply them to Postgresql.
 
 #### Logging object
 
