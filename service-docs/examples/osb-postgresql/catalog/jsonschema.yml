@@ -12,6 +12,7 @@ schemas: &schemas
             type: string
         schema: http://json-schema.org/draft-04/schema#
         type: object
+        additionalProperties: false
   service_instance:
     update: &schemaproperties
       parameters:
@@ -23,6 +24,7 @@ schemas: &schemas
                 default: "14"
               ssl:
                 type: object
+                additionalProperties: false
                 properties:
                   enabled:
                     title: ssl enabled
@@ -50,6 +52,7 @@ schemas: &schemas
                       - ""
               database:
                 type: object
+                additionalProperties: false
                 properties:
                   extensions:
                     items:
@@ -173,6 +176,7 @@ schemas: &schemas
                   - autovacuum_max_workers
                 title: General PostgreSQL Settings
                 type: object
+                additionalProperties: false
               databases:
                 items:
                   - properties:
@@ -192,6 +196,7 @@ schemas: &schemas
                     required:
                       - name
                     type: object
+                    additionalProperties: false
                 type: array
               users:
                 items:
@@ -207,9 +212,11 @@ schemas: &schemas
                       - username
                       - password
                     type: object
+                    additionalProperties: false
                 type: array
               replication:
                 type: object
+                additionalProperties: false
                 title: Write-Ahead Logging (WAL) settings
                 properties:
                   max_wal_senders:
@@ -220,6 +227,7 @@ schemas: &schemas
               resource:
                 title: Settings for managing resources
                 type: object
+                additionalProperties: false
                 properties:
                   shared_buffers:
                     ### CHANGE
@@ -276,6 +284,7 @@ schemas: &schemas
                 title: Logging
                 description: Determines how often logs should be created, which also affects the log name
                 type: object
+                additionalProperties: false
                 properties:
                   filename:
                     title: The filename used for logs. Uses strftime (%-escapes)
@@ -292,6 +301,8 @@ schemas: &schemas
                     default: true
             title: ProgreSQL Configuration
             type: object
+            additionalProperties: false
         schema: http://json-schema.org/draft-06/schema
         type: object
+        additionalProperties: false
     create: *schemaproperties

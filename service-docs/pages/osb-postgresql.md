@@ -478,6 +478,7 @@ schemas: &schemas
                   type: string
               schema: http://json-schema.org/draft-04/schema#
               type: object
+              additionalProperties: false
         service_instance:
           update: &schemaproperties
             parameters:
@@ -489,6 +490,7 @@ schemas: &schemas
                       default: "14"
                     ssl:
                       type: object
+                      additionalProperties: false
                       properties:
                         enabled:
                           title: ssl enabled
@@ -516,6 +518,7 @@ schemas: &schemas
                           - ""
                     database:
                       type: object
+                      additionalProperties: false
                       properties:
                         extensions:
                           items:
@@ -627,6 +630,7 @@ schemas: &schemas
                       - max_pred_locks_per_page
                       title: General PostgreSQL Settings
                       type: object
+                      additionalProperties: false
                     databases:
                       items:
                       - properties:
@@ -646,6 +650,7 @@ schemas: &schemas
                         required:
                         - name
                         type: object
+                        additionalProperties: false
                       type: array
                     users:
                       items:
@@ -661,10 +666,13 @@ schemas: &schemas
                         - username
                         - password
                         type: object
+                        additionalProperties: false
                       type: array
                   title: ProgreSQL Configuration
                   type: object
+                  additionalProperties: false
               schema: http://json-schema.org/draft-06/schema
               type: object
+              additionalProperties: false
           create: *schemaproperties
 ```
