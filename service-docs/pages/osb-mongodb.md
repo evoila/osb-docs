@@ -122,6 +122,8 @@ The size of a plan can be scaled up afterwards but this will copy the disk.
 
 Setting up a backup can be done the dashboard-url of the service instance (which can be retrieved by the cli command **cf service SERVICE_INSTANCE**). For more information, see the Backup Docs.
 
+> **_IMPORTANT:_** Do **not** create/restore a backup of *local* as this will lead to a failure of the backup job.
+
 ## FAQ
 
 ### OSB-MongoDB crashed

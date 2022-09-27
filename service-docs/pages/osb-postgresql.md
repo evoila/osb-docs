@@ -132,6 +132,8 @@ When creating an instance, the disk-space should be calculated. It is important 
 
 Setting up a backup can be done the dashboard-url of the service instance (which can be retrieved by the cli command **cf service SERVICE_INSTANCE**). For more information, see the Backup Docs.
 
+> **_IMPORTANT:_** Do **not** create/restore a backup of *template 0*, *template 1* and *backup*  as this will lead to a failure of the backup/restore job.
+
 ### Change SSL Certificates
 
 The certificates expire after 365 day. If a certificate is about to expire, contact the operator of the Service Broker to renew the certificates.
