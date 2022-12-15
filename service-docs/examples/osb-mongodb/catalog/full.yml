@@ -1,0 +1,123 @@
+backup:
+  enabled: true
+bosh:
+  authentication: OAUTH
+  stemcellOs: ubuntu-xenial
+  stemcellVersion: latest
+  vip_network: floating
+catalog:
+  services:
+    - bindable: true
+      bindings_retrievable: true
+      dashboard:
+        auth_endpoint: https://login.system.cf.hob.local/oauth
+        url: https://osb-mongodb-test.system.cf.hob.local/custom/v2/authentication
+      dashboard_client:
+        id: osb-mongodb-test.system.cf.hob.local
+        redirect_uri: https://osb-mongodb-test.system.cf.hob.local/custom/v2/authentication
+      description: MongoDB Instances
+      id: 10BC484C-CDE2-45DD-9C8C-2515AE5C3233
+      instances_retrievable: true
+      name: osb-mongodb-test
+      plan_updateable: true
+      plans:
+        - description: A small instance for low requirement apps
+          free: false
+          id: D98A309F-D60C-4C03-B958-579BD3DFBA88
+          metadata:
+            randomize_az_placement: true
+            backup:
+              enabled: true
+              instance_group: mongodb
+              platform: BOSH
+            connections: 1000
+            ingress_instance_group: mongodb
+            instance_group_config:
+              - name: mongodb
+                nodes: 1
+            networks:
+              - name: default
+            persistent_disk_type: 10GB
+            vm_type: minimal
+          name: s
+          platform: BOSH
+        - description: The medium version for MongoDB and distributed applications
+          free: false
+          id: 4CBAC4E5-FD8B-4652-BD61-8FDEFC70749B
+          metadata:
+            backup:
+              enabled: true
+              instance_group: mongodb
+              platform: BOSH
+            connections: 5000
+            ingress_instance_group: mongodb
+            instance_group_config:
+              - name: mongodb
+                nodes: 3
+            networks:
+              - name: default
+            persistent_disk_type: 10GB
+            vm_type: minimal
+          name: m
+          platform: BOSH
+        - description: A good toolbox providing availability and performance over five
+            nodes
+          free: false
+          id: 8DE692DA-0803-480B-B4E8-100485122D74
+          metadata:
+            backup:
+              enabled: true
+              instance_group: mongodb
+              platform: BOSH
+            connections: 5000
+            ingress_instance_group: mongodb
+            instance_group_config:
+              - name: mongodb
+                nodes: 5
+            networks:
+              - name: default
+            persistent_disk_type: 100GB
+            vm_type: small
+          name: l
+          platform: BOSH
+config:
+  sb:
+    name: osb-mongodb
+    uri: https://osb-mongodb-test.system.cf.hob.local
+  site:
+    postfix: ""
+    url: system.cf.hob.local
+existing:
+  endpoint:
+    deployment: osb-mongodb
+    hosts:
+      - name: mongodb
+        port: 27017
+        ip: 10.4.11.223
+      - name: mongodb
+        port: 27017
+        ip: 10.4.12.221
+      - name: mongodb
+        port: 27017
+        ip: 10.4.13.221
+
+endpoints:
+  custom:
+    - identifier: osb-backup-manager
+      url: https://osb-backup-manager-test.system.cf.hob.local
+    - identifier: osb-log-metric-backend
+      url: https://osb-log-metric-dashboard-backend-test.system.cf.hob.local
+    - identifier: osb-autoscaler-core
+      url: https://osb-autoscaler-core-test.system.cf.hob.local
+  default: https://osb-mongodb-test.system.cf.hob.local
+spring:
+  profiles: mongodb
+  thymeleaf:
+    cache: true
+    mode: LEGACYHTML5
+kafka:
+  backup:
+    group-id: mongodb
+    replication: 1
+    partition: 6
+    retention: 300000
