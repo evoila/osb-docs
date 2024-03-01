@@ -356,6 +356,7 @@ The config object contains the settings for locks and consists of the following 
 | max_connections | integer | 100 | Maximum number of connections that the server may accept. Changing the value requires postgresql to reallocate working memory which can only be applied after a restart after deploying. This can lead to a short downtime < 1s of postgresql. |
 | max_prepared_transactions | integer | 0 | Max number of transactions that can be in the prepared state simultaneously. Setting this parameter to zero disables the prepared-transaction feature. |
 | track_commit_timestamp | string | off | Record commit time of transactions. Value can be either on or off. |
+| effective_io_concurrency        | integer | 1                                                       | Set the number of allowed parallel io-operations.                                                                                                                                                                                    |
 
 #### Databases object
 
@@ -397,8 +398,6 @@ The config object contains the settings for locks and consists of the following 
 | max_parallel_workers            | integer | 8                                                       | Maximum number of workers that the system can support for parallel queries                                                                                                                                                           |
 | max_files_per_process           | integer | 1000                                                    | Maximum number of simultaneously open files allowed to each server subprocess                                                                                                                                                        |
 | max_worker_processes            | integer | 2                                                       | Sets the maximum number of background processes that the system can support.                                                                                                                                                         |
-| effective_io_concurrency        | integer | 1                                                       | Set the number of allowed parallel io-operations.                                                                                                                                                                                    |
-
 
 > **_IMPORTANT:_** While it is possible to declare the field wal_log_hints inside the Resource object, changes to its value will have no effect. This is caused by a bug auf Patroni, which states that changes have been made but does not actually apply them to Postgresql.
 

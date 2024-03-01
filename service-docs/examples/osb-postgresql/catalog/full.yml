@@ -237,6 +237,11 @@ catalog:
                           type: integer
                           default: 3
                           minimum: 1
+                        effective_io_concurrency:
+                          title: Number of allowed parallel io-operations
+                          type: integer
+                          default: 1
+                          minimum: 1
                       required:
                         - authentication_timeout
                         - max_locks_per_transaction
@@ -245,6 +250,7 @@ catalog:
                         - max_pred_locks_per_page
                         - max_connections
                         - autovacuum_max_workers
+                        - effective_io_concurrency
                       title: General PostgreSQL Settings
                       type: object
                       additionalProperties: false
@@ -300,11 +306,6 @@ catalog:
                       type: object
                       additionalProperties: false
                       properties:
-                        effective_io_concurrency:
-                          title: Number of allowed parallel io-operations
-                          type: integer
-                          default: 1
-                          minimum: 1
                         shared_buffers:
                           ### CHANGE
                           title: Amount of memory used for shared memory buffers, 0.25 * RAM recommended.
